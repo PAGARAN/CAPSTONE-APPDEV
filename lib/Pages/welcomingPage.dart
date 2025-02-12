@@ -1,6 +1,19 @@
 import 'package:flutter/material.dart';
 
-class WelcomePage extends StatelessWidget {
+class WelcomePage extends StatefulWidget {
+  @override
+  WelcomePageState createState() => WelcomePageState();
+}
+
+class WelcomePageState extends State<WelcomePage> {
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration(seconds: 4), () {
+      Navigator.pushReplacementNamed(context, '/dashboard');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,6 +46,11 @@ class WelcomePage extends StatelessWidget {
                 height: 379,
                 width: 325,
                 child: Image.asset('Assets/images/Logo.png', fit: BoxFit.cover),
+              ),
+              SizedBox(height: 30),
+              // Added CircularProgressIndicator
+              CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
               ),
             ],
           ),

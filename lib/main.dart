@@ -13,7 +13,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Welcoming Page',
       theme: ThemeData(),
-      home: Dashboard(),
+      home: WelcomePage(),
+      routes: {
+        '/dashboard': (context) => Dashboard(),
+      },
     );
   }
 }
