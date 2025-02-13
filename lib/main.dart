@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-// import './Pages/welcomingPage.dart';
+import './Pages/welcomingPage.dart';
 import './Pages/Dashboard.dart';
+import './Pages/Diagnoses.dart';
+import 'Pages/Results.dart';
 
 void main() {
   runApp(MyApp());
@@ -13,7 +15,12 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Welcoming Page',
       theme: ThemeData(),
-      home: Dashboard(),
+      home: Results(),
+      routes: {
+        '/dashboard': (context) => Dashboard(),
+        '/diagnoses': (context) => Diagnoses(),
+        '/results': (context) => Results(),
+      },
     );
   }
 }

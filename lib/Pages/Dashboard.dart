@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../Pages/Diagnoses.dart';
+import './Diagnoses.dart';
 
 class Dashboard extends StatelessWidget {
   // Sample data for recent diagnoses
@@ -219,39 +219,65 @@ class Dashboard extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: BottomAppBar(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            IconButton(
-              icon:
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 0,
+        onTap: (index) {
+          print('Tapped index: $index'); // Debug print
+          if (index == 2) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const Diagnoses(),
+              ),
+            );
+          }
+        },
+        elevation: 10,
+        selectedItemColor: Color.fromARGB(255, 0, 0, 0),
+        unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
+        items: [
+          BottomNavigationBarItem(
+            icon: Image.asset('Assets/images/Home.png', height: 24, width: 24),
+            label: 'Home',
+            activeIcon: Container(
+              decoration: BoxDecoration(
+                color: Color(0xFF45DFB1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.all(15),
+              child:
                   Image.asset('Assets/images/Home.png', height: 24, width: 24),
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => Dashboard()),
-                );
-              },
             ),
-            IconButton(
-              icon: Image.asset('Assets/images/ScanNavBar.png',
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset('Assets/images/ScanNavBar.png',
+                height: 24, width: 24),
+            label: 'Scan',
+            activeIcon: Container(
+              decoration: BoxDecoration(
+                color: Color(0xFF45DFB1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.all(15),
+              child: Image.asset('Assets/images/ScanNavBar.png',
                   height: 24, width: 24),
-              onPressed: () {
-                // TODO: Implement fullscreen functionality
-              },
             ),
-            IconButton(
-              icon: Image.asset('Assets/images/DiagnosIcon.png',
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset('Assets/images/DiagnosIcon.png',
+                height: 24, width: 24),
+            label: 'Diagnoses',
+            activeIcon: Container(
+              decoration: BoxDecoration(
+                color: Color(0xFF45DFB1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.all(15),
+              child: Image.asset('Assets/images/DiagnosIcon.png',
                   height: 24, width: 24),
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => Diagnoses()),
-                );
-              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
