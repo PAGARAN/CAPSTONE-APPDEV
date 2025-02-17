@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
-import './Dashboard.dart';
+// import './Dashboard.dart';
 import 'Diagnoses.dart';
 
 class Results extends StatelessWidget {
-  const Results({super.key});
+  final String disease;
+  final String date;
+
+  const Results({
+    super.key,
+    required this.disease,
+    required this.date,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +59,7 @@ class Results extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Rust',
+                          disease,
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -60,7 +67,7 @@ class Results extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          'Just Now',
+                          date,
                           style: TextStyle(
                             color: Colors.grey,
                             fontSize: 12,

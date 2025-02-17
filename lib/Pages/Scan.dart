@@ -1,8 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import './Dashboard.dart';
+import 'Results.dart';
 
 class Scan extends StatelessWidget {
   const Scan({super.key});
+
+  Future<void> _pickImage(BuildContext context, ImageSource source) async {
+    try {
+      final picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: source);
+
+      if (image != null) {
+        // Navigate to Results with the image
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Results(
+              disease: 'Rust',
+              date: 'Just now',
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error picking image: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,9 +86,7 @@ class Scan extends StatelessWidget {
                   width: double.infinity,
                   margin: EdgeInsets.symmetric(vertical: 8),
                   child: ElevatedButton(
-                    onPressed: () {
-                      // TODO: Implement gallery picker
-                    },
+                    onPressed: () => _pickImage(context, ImageSource.gallery),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       padding: EdgeInsets.symmetric(vertical: 16),
@@ -94,9 +116,7 @@ class Scan extends StatelessWidget {
                   width: double.infinity,
                   margin: EdgeInsets.symmetric(vertical: 8),
                   child: ElevatedButton(
-                    onPressed: () {
-                      // TODO: Implement camera picker
-                    },
+                    onPressed: () => _pickImage(context, ImageSource.camera),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       padding: EdgeInsets.symmetric(vertical: 16),

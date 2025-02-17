@@ -120,7 +120,12 @@ class Diagnoses extends StatelessWidget {
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => Results()),
+        MaterialPageRoute(
+          builder: (context) => Results(
+            disease: title,
+            date: timeAgo,
+          ),
+        ),
       ),
       child: Card(
         margin: const EdgeInsets.only(bottom: 16),

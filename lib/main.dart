@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-// import './Pages/welcomingPage.dart';
+import './Pages/welcomingPage.dart';
 import './Pages/Dashboard.dart';
 import './Pages/Diagnoses.dart';
 import './Pages/Results.dart';
@@ -16,11 +16,14 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Welcoming Page',
       theme: ThemeData(),
-      home: Scan(),
+      home: WelcomePage(),
       routes: {
         '/dashboard': (context) => Dashboard(),
         '/diagnoses': (context) => Diagnoses(),
-        '/results': (context) => Results(),
+        '/results': (context) => Results(
+              disease: 'Rust',
+              date: 'Just now',
+            ),
         '/scan': (context) => Scan(),
       },
     );

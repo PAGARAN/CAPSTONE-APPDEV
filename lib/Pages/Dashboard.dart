@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import './Diagnoses.dart';
+import './Scan.dart';
+import './Results.dart';
 
-class Dashboard extends StatelessWidget {
+class Dashboard extends StatefulWidget {
+  @override
+  _DashboardState createState() => _DashboardState();
+}
+
+class _DashboardState extends State<Dashboard> {
   // Sample data for recent diagnoses
   final List<Map<String, String>> diagnoses = [
     {'disease': 'Common Rust', 'date': '3h ago'},
@@ -153,7 +160,10 @@ class Dashboard extends StatelessWidget {
                         width: double.infinity, // Full width
                         child: OutlinedButton(
                           onPressed: () {
-                            // Add your scan action here
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => Scan()),
+                            );
                           },
                           child: Text('Scan Now'),
                           style: OutlinedButton.styleFrom(
@@ -222,8 +232,13 @@ class Dashboard extends StatelessWidget {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 0,
         onTap: (index) {
-          print('Tapped index: $index'); // Debug print
-          if (index == 2) {
+          if (index == 1) {
+            // When scan tab is clicked
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => Scan()),
+            );
+          } else if (index == 2) {
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => const Diagnoses(),
@@ -283,36 +298,48 @@ class Dashboard extends StatelessWidget {
   }
 
   Widget _buildDiagnosisItem(String disease, String date) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          Image.asset(
-            'Assets/images/CommonRust.png', // Replace with your image path
-            height: 40, // Adjust height as needed
-            width: 40, // Adjust width as needed
+    return InkWell(
+      // Add InkWell for tap functionality
+      onTap: () {
+        // Navigate to the Result page with the diagnosis details
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Results(disease: disease, date: date),
           ),
-          SizedBox(width: 8),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                disease,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Row(
+          children: [
+            Image.asset(
+              'Assets/images/CommonRust.png',
+              height: 40,
+              width: 40,
+            ),
+            SizedBox(width: 8),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  disease,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              Text(
-                date,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey,
+                Text(
+                  date,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
