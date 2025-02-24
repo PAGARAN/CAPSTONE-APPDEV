@@ -4,6 +4,8 @@ import './Pages/Dashboard.dart';
 import './Pages/Diagnoses.dart';
 import './Pages/Results.dart';
 import './Pages/Scan.dart';
+import './Pages/AboutPage.dart';
+import './Pages/Language.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
@@ -30,6 +32,9 @@ class MyApp extends StatelessWidget {
               date: 'Just now',
             ),
         '/scan': (context) => const Scan(),
+        '/about': (context) => const AboutPage(),
+        '/language': (context) => const Language(),
+        '/welcoming': (context) => const WelcomePage(),
       },
     );
   }

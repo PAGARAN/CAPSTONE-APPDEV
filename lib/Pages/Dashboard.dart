@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import './Diagnoses.dart';
 import './Scan.dart';
 import './Results.dart';
+import './AboutPage.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -34,21 +35,41 @@ class _DashboardState extends State<Dashboard> {
               // Row with icon and welcome text
               Row(
                 children: [
-                  Container(
-                    height: 40,
-                    width: 40,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFD9D9D9),
-                      borderRadius: BorderRadius.circular(50),
-                    ),
-                    child: Center(
-                      child: Image.asset(
-                        'Assets/images/Usericon.png',
-                        height: 24,
-                        width: 24,
-                        fit: BoxFit.contain,
+                  PopupMenuButton(
+                    child: Container(
+                      height: 40,
+                      width: 40,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFD9D9D9),
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      child: Center(
+                        child: Image.asset(
+                          'Assets/images/Usericon.png',
+                          height: 24,
+                          width: 24,
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     ),
+                    itemBuilder: (BuildContext context) => [
+                      PopupMenuItem(
+                        child: Row(
+                          children: [
+                            const Icon(Icons.logout),
+                            const SizedBox(width: 8),
+                            const Text('language Option'),
+                          ],
+                        ),
+                        onTap: () {
+                          // Add a small delay to avoid navigation conflicts
+                          Future.delayed(Duration.zero, () {
+                            Navigator.pushReplacementNamed(
+                                context, '/language');
+                          });
+                        },
+                      ),
+                    ],
                   ),
                   const SizedBox(width: 8), // Spacing between icon and text
                   const Text(
@@ -65,61 +86,69 @@ class _DashboardState extends State<Dashboard> {
               const SizedBox(height: 5), // Spacing after the welcome row
 
               // Info Container with overlay
-              Container(
-                height: 211,
-                width: 350,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 5.0,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Stack(
-                  // Use Stack to overlay text on the image
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: Image.asset(
-                        'Assets/images/FarmImage.png',
-                        fit: BoxFit.cover,
-                        height: 261,
-                        width: 360,
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const AboutPage()),
+                  );
+                },
+                child: Container(
+                  height: 211,
+                  width: 350,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 5.0,
+                        offset: Offset(0, 2),
                       ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      left: 3,
-                      child: Container(
-                        width: 343.5,
-                        height: 74, // Set height to 74
-                        decoration: const BoxDecoration(
-                          color: Color.fromARGB(
-                              123, 0, 0, 0), // Semi-transparent background
-                          borderRadius: BorderRadius.vertical(
-                              bottom: Radius.circular(
-                                  15)), // Match the image border radius
+                    ],
+                  ),
+                  child: Stack(
+                    // Use Stack to overlay text on the image
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(15),
+                        child: Image.asset(
+                          'Assets/images/FarmImage.png',
+                          fit: BoxFit.cover,
+                          height: 261,
+                          width: 360,
                         ),
-                        child: const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text(
-                              'Learn how Corn Disease Detection helps thousands of farmers',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.white, // Text color
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        left: 3,
+                        child: Container(
+                          width: 343.5,
+                          height: 74, // Set height to 74
+                          decoration: const BoxDecoration(
+                            color: Color.fromARGB(
+                                123, 0, 0, 0), // Semi-transparent background
+                            borderRadius: BorderRadius.vertical(
+                                bottom: Radius.circular(
+                                    15)), // Match the image border radius
+                          ),
+                          child: const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text(
+                                'Learn how Corn Disease Detection helps thousands of farmers',
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white, // Text color
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
 
@@ -164,15 +193,16 @@ class _DashboardState extends State<Dashboard> {
                           onPressed: () {
                             Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(builder: (context) => const Scan()),
+                              MaterialPageRoute(
+                                  builder: (context) => const Scan()),
                             );
                           },
                           style: OutlinedButton.styleFrom(
                             foregroundColor: Colors.black, // Text color
-                            side:
-                                const BorderSide(color: Colors.black), // Border color
-                            padding:
-                                const EdgeInsets.symmetric(vertical: 5), // Padding
+                            side: const BorderSide(
+                                color: Colors.black), // Border color
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 5), // Padding
                             shape: RoundedRectangleBorder(
                               borderRadius:
                                   BorderRadius.circular(15), // Rounded corners
