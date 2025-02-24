@@ -15,14 +15,14 @@ class Results extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF8EFE8),
+      backgroundColor: const Color(0xFFF8EFE8),
       appBar: AppBar(
-        backgroundColor: Color(0xFFF8EFE8),
+        backgroundColor: const Color(0xFFF8EFE8),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => Diagnoses()),
+            MaterialPageRoute(builder: (context) => const Diagnoses()),
           ),
         ),
         title: const Text('Result'),
@@ -40,7 +40,7 @@ class Results extends StatelessWidget {
             children: [
               // Disease Image
               ClipRRect(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
                 child: Image.asset(
                   'Assets/images/rustImage.png',
                   width: double.infinity,
@@ -60,7 +60,7 @@ class Results extends StatelessWidget {
                       children: [
                         Text(
                           disease,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -68,14 +68,14 @@ class Results extends StatelessWidget {
                         ),
                         Text(
                           date,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.grey,
                             fontSize: 12,
                           ),
                         ),
                       ],
                     ),
-                    Text(
+                    const Text(
                       'maize',
                       style: TextStyle(
                         color: Colors.grey,
@@ -83,10 +83,10 @@ class Results extends StatelessWidget {
                       ),
                     ),
 
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
                     // Disease Description
-                    Text(
+                    const Text(
                       'Disease Description:',
                       style: TextStyle(
                         fontSize: 18,
@@ -94,8 +94,8 @@ class Results extends StatelessWidget {
                         color: Colors.white,
                       ),
                     ),
-                    SizedBox(height: 8),
-                    Text(
+                    const SizedBox(height: 8),
+                    const Text(
                       'Common rust in maize, caused by Puccinia sorghi, shows as reddish-brown pustules on leaves, affecting photosynthesis and yield, especially in cool, moist climates. Prevent it by using resistant varieties, rotating crops, ensuring good plant spacing, and monitoring for early signs. Fungicides can help if applied promptly, and removing infected residue after harvest minimizes future risk.',
                       style: TextStyle(
                         fontSize: 14,
@@ -103,10 +103,10 @@ class Results extends StatelessWidget {
                       ),
                     ),
 
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
                     // Prevention Tips
-                    Text(
+                    const Text(
                       'Prevention Tips:',
                       style: TextStyle(
                         fontSize: 18,
@@ -114,7 +114,7 @@ class Results extends StatelessWidget {
                         color: Colors.white,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     _buildPreventionTip(
                       '1. Choose Resistant Varieties:',
                       'Use rust-resistant maize varieties to lower the risk of severe infection and boost natural plant defense.',
@@ -157,7 +157,7 @@ class Results extends StatelessWidget {
         children: [
           Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 14,
               color: Colors.white,
@@ -165,7 +165,7 @@ class Results extends StatelessWidget {
           ),
           Text(
             description,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               color: Colors.white,
             ),

@@ -4,6 +4,8 @@ import './Scan.dart';
 import './Results.dart';
 
 class Dashboard extends StatefulWidget {
+  const Dashboard({super.key});
+
   @override
   _DashboardState createState() => _DashboardState();
 }
@@ -27,7 +29,7 @@ class _DashboardState extends State<Dashboard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 32), // Add spacing at the top
+              const SizedBox(height: 32), // Add spacing at the top
 
               // Row with icon and welcome text
               Row(
@@ -48,8 +50,8 @@ class _DashboardState extends State<Dashboard> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 8), // Spacing between icon and text
-                  Text(
+                  const SizedBox(width: 8), // Spacing between icon and text
+                  const Text(
                     'Welcome Back!',
                     style: TextStyle(
                       fontSize: 18,
@@ -60,7 +62,7 @@ class _DashboardState extends State<Dashboard> {
                 ],
               ),
 
-              SizedBox(height: 5), // Spacing after the welcome row
+              const SizedBox(height: 5), // Spacing after the welcome row
 
               // Info Container with overlay
               Container(
@@ -68,7 +70,7 @@ class _DashboardState extends State<Dashboard> {
                 width: 350,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
                       color: Colors.black26,
                       blurRadius: 5.0,
@@ -94,16 +96,16 @@ class _DashboardState extends State<Dashboard> {
                       child: Container(
                         width: 343.5,
                         height: 74, // Set height to 74
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(
+                        decoration: const BoxDecoration(
+                          color: Color.fromARGB(
                               123, 0, 0, 0), // Semi-transparent background
                           borderRadius: BorderRadius.vertical(
                               bottom: Radius.circular(
                                   15)), // Match the image border radius
                         ),
-                        child: Center(
+                        child: const Center(
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: EdgeInsets.all(8.0),
                             child: Text(
                               'Learn how Corn Disease Detection helps thousands of farmers',
                               textAlign: TextAlign.left,
@@ -121,7 +123,7 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
 
-              SizedBox(height: 5), // Spacing
+              const SizedBox(height: 5), // Spacing
 
               // Scan Container with Stroke Design
               Container(
@@ -145,8 +147,8 @@ class _DashboardState extends State<Dashboard> {
                             height: 24,
                             width: 24,
                           ),
-                          SizedBox(width: 5),
-                          Expanded(
+                          const SizedBox(width: 5),
+                          const Expanded(
                             child: Text(
                               'Know maize diseases with AI - Powered CDD',
                               style: TextStyle(fontSize: 12.5),
@@ -154,29 +156,29 @@ class _DashboardState extends State<Dashboard> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       // Custom Scan Now Button
-                      Container(
+                      SizedBox(
                         width: double.infinity, // Full width
                         child: OutlinedButton(
                           onPressed: () {
                             Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(builder: (context) => Scan()),
+                              MaterialPageRoute(builder: (context) => const Scan()),
                             );
                           },
-                          child: Text('Scan Now'),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: Colors.black, // Text color
                             side:
-                                BorderSide(color: Colors.black), // Border color
+                                const BorderSide(color: Colors.black), // Border color
                             padding:
-                                EdgeInsets.symmetric(vertical: 5), // Padding
+                                const EdgeInsets.symmetric(vertical: 5), // Padding
                             shape: RoundedRectangleBorder(
                               borderRadius:
                                   BorderRadius.circular(15), // Rounded corners
                             ),
                           ),
+                          child: Text('Scan Now'),
                         ),
                       ),
                     ],
@@ -184,15 +186,15 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
 
-              SizedBox(height: 5), // Spacing
+              const SizedBox(height: 5), // Spacing
 
               // Recent Diagnoses Section with Stroke Design
               Row(
                 children: [
                   Image.asset('Assets/images/search.png',
                       height: 14, width: 14),
-                  SizedBox(width: 8),
-                  Text(
+                  const SizedBox(width: 8),
+                  const Text(
                     'Recent Diagnoses',
                     style: TextStyle(
                       fontSize: 18,
@@ -201,7 +203,7 @@ class _DashboardState extends State<Dashboard> {
                   ),
                 ],
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Container(
                 height: 205, // Adjust height as needed
                 width: 350,
@@ -236,7 +238,7 @@ class _DashboardState extends State<Dashboard> {
             // When scan tab is clicked
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => Scan()),
+              MaterialPageRoute(builder: (context) => const Scan()),
             );
           } else if (index == 2) {
             Navigator.of(context).push(
@@ -247,7 +249,7 @@ class _DashboardState extends State<Dashboard> {
           }
         },
         elevation: 10,
-        selectedItemColor: Color.fromARGB(255, 0, 0, 0),
+        selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
         items: [
@@ -256,7 +258,7 @@ class _DashboardState extends State<Dashboard> {
             label: 'Home',
             activeIcon: Container(
               decoration: BoxDecoration(
-                color: Color(0xFF45DFB1),
+                color: const Color(0xFF45DFB1),
                 borderRadius: BorderRadius.circular(12),
               ),
               padding: const EdgeInsets.all(15),
@@ -270,7 +272,7 @@ class _DashboardState extends State<Dashboard> {
             label: 'Scan',
             activeIcon: Container(
               decoration: BoxDecoration(
-                color: Color(0xFF45DFB1),
+                color: const Color(0xFF45DFB1),
                 borderRadius: BorderRadius.circular(12),
               ),
               padding: const EdgeInsets.all(15),
@@ -284,7 +286,7 @@ class _DashboardState extends State<Dashboard> {
             label: 'Diagnoses',
             activeIcon: Container(
               decoration: BoxDecoration(
-                color: Color(0xFF45DFB1),
+                color: const Color(0xFF45DFB1),
                 borderRadius: BorderRadius.circular(12),
               ),
               padding: const EdgeInsets.all(15),
@@ -318,20 +320,20 @@ class _DashboardState extends State<Dashboard> {
               height: 40,
               width: 40,
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   disease,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
                   date,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     color: Colors.grey,
                   ),

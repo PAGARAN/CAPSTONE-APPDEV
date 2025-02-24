@@ -4,12 +4,17 @@ import './Pages/Dashboard.dart';
 import './Pages/Diagnoses.dart';
 import './Pages/Results.dart';
 import './Pages/Scan.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -19,12 +24,12 @@ class MyApp extends StatelessWidget {
       home: WelcomePage(),
       routes: {
         '/dashboard': (context) => Dashboard(),
-        '/diagnoses': (context) => Diagnoses(),
-        '/results': (context) => Results(
+        '/diagnoses': (context) => const Diagnoses(),
+        '/results': (context) => const Results(
               disease: 'Rust',
               date: 'Just now',
             ),
-        '/scan': (context) => Scan(),
+        '/scan': (context) => const Scan(),
       },
     );
   }

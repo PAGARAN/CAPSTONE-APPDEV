@@ -16,7 +16,7 @@ class Scan extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => Results(
+            builder: (context) => const Results(
               disease: 'Rust',
               date: 'Just now',
             ),
@@ -32,22 +32,22 @@ class Scan extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              const Color(0xFF80ED99),
-              const Color(0xFF80ED99),
-              const Color(0xFF80ED99),
-              const Color(0xFF80ED99),
-              const Color(0xFF45DFB1),
-              const Color(0xFF45DFB1),
-              const Color(0xFF0AD1C8),
-              const Color(0xFF0AD1C8),
-              const Color(0xFF14919B),
-              const Color(0xFF0B6477),
-              const Color(0xFF213A57),
+              Color(0xFF80ED99),
+              Color(0xFF80ED99),
+              Color(0xFF80ED99),
+              Color(0xFF80ED99),
+              Color(0xFF45DFB1),
+              Color(0xFF45DFB1),
+              Color(0xFF0AD1C8),
+              Color(0xFF0AD1C8),
+              Color(0xFF14919B),
+              Color(0xFF0B6477),
+              Color(0xFF213A57),
             ],
           ),
         ),
@@ -73,7 +73,7 @@ class Scan extends StatelessWidget {
                 // Logo
                 Container(
                   alignment: Alignment.center,
-                  margin: EdgeInsets.only(top: 40, bottom: 40),
+                  margin: const EdgeInsets.only(top: 40, bottom: 40),
                   child: Image.asset(
                     'Assets/images/Logo.png',
                     width: 280,
@@ -84,17 +84,17 @@ class Scan extends StatelessWidget {
                 // Pick Gallery Button
                 Container(
                   width: double.infinity,
-                  margin: EdgeInsets.symmetric(vertical: 8),
+                  margin: const EdgeInsets.symmetric(vertical: 8),
                   child: ElevatedButton(
                     onPressed: () => _pickImage(context, ImageSource.gallery),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: Row(
+                    child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.photo_library, color: Colors.black),
@@ -114,17 +114,17 @@ class Scan extends StatelessWidget {
                 // Pick Camera Button
                 Container(
                   width: double.infinity,
-                  margin: EdgeInsets.symmetric(vertical: 8),
+                  margin: const EdgeInsets.symmetric(vertical: 8),
                   child: ElevatedButton(
                     onPressed: () => _pickImage(context, ImageSource.camera),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: Row(
+                    child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.camera_alt, color: Colors.black),

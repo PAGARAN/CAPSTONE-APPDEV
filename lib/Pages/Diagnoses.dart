@@ -8,9 +8,9 @@ class Diagnoses extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF8EFE8),
+      backgroundColor: const Color(0xFFF8EFE8),
       appBar: AppBar(
-        backgroundColor: Color(0xFFF8EFE8),
+        backgroundColor: const Color(0xFFF8EFE8),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pushReplacement(
@@ -65,7 +65,7 @@ class Diagnoses extends StatelessWidget {
           }
         },
         elevation: 10,
-        selectedItemColor: Color.fromARGB(255, 0, 0, 0),
+        selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
         items: [
@@ -74,7 +74,7 @@ class Diagnoses extends StatelessWidget {
             label: 'Home',
             activeIcon: Container(
               decoration: BoxDecoration(
-                color: Color(0xFF45DFB1),
+                color: const Color(0xFF45DFB1),
                 borderRadius: BorderRadius.circular(12),
               ),
               padding: const EdgeInsets.all(15),
@@ -88,7 +88,7 @@ class Diagnoses extends StatelessWidget {
             label: 'Scan',
             activeIcon: Container(
               decoration: BoxDecoration(
-                color: Color(0xFF45DFB1),
+                color: const Color(0xFF45DFB1),
                 borderRadius: BorderRadius.circular(12),
               ),
               padding: const EdgeInsets.all(15),
@@ -102,7 +102,7 @@ class Diagnoses extends StatelessWidget {
             label: 'Diagnoses',
             activeIcon: Container(
               decoration: BoxDecoration(
-                color: Color(0xFF45DFB1),
+                color: const Color(0xFF45DFB1),
                 borderRadius: BorderRadius.circular(12),
               ),
               padding: const EdgeInsets.all(15),
