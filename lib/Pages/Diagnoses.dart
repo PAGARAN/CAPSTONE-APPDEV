@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import './Dashboard.dart';
 import './Results.dart';
+import './Scan.dart';
 
 class Diagnoses extends StatelessWidget {
   const Diagnoses({super.key});
@@ -61,6 +62,11 @@ class Diagnoses extends StatelessWidget {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => Dashboard()),
+            );
+          } else if (index == 1) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => Scan()),
             );
           }
         },
