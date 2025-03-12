@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import './Diagnoses.dart';
 import './Scan.dart';
 import './Results.dart';
@@ -14,40 +15,55 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   // Sample data for recent diagnoses
   final List<Map<String, String>> diagnoses = [
-    {'disease': 'Common Rust', 'date': '3h ago'},
-    {'disease': 'Common Rust', 'date': 'Nov 4, 2024'},
-    {'disease': 'Common Rust', 'date': 'Nov 11, 2024'},
+    {'disease': 'Common Rust'.tr(), 'date': '3h_ago'.tr()},
+    {'disease': 'Common Rust'.tr(), 'date': 'Nov_4_2024'.tr()},
+    {'disease': 'Common Rust'.tr(), 'date': 'Nov_11_2024'.tr()},
   ];
 
   @override
   Widget build(BuildContext context) {
+    // Get screen dimensions
+    final screenSize = MediaQuery.of(context).size;
+    final padding = MediaQuery.of(context).padding;
+    final height = screenSize.height - padding.top - padding.bottom;
+    final width = screenSize.width;
+
+    // Calculate responsive dimensions
+    final containerWidth = width * 0.9; // 90% of screen width
+    final imageHeight = height * 0.25; // 25% of available height
+    final scanContainerHeight = height * 0.15; // 15% of available height
+    final diagnosesHeight = height * 0.3; // 30% of available height
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8EFE8), // Background color
       body: SingleChildScrollView(
         // Wrap the body in a SingleChildScrollView
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.symmetric(
+            horizontal: width * 0.04, // 4% padding
+            vertical: height * 0.02, // 2% padding
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 32), // Add spacing at the top
+              SizedBox(height: height * 0.04), // 4% spacing
 
-              // Row with icon and welcome text
+              // User Profile and Welcome Text
               Row(
                 children: [
                   PopupMenuButton(
                     child: Container(
-                      height: 40,
-                      width: 40,
+                      height: width * 0.1, // Responsive size
+                      width: width * 0.1,
                       decoration: BoxDecoration(
                         color: const Color(0xFFD9D9D9),
-                        borderRadius: BorderRadius.circular(50),
+                        borderRadius: BorderRadius.circular(width * 0.05),
                       ),
                       child: Center(
                         child: Image.asset(
-                          'Assets/images/Usericon.png',
-                          height: 24,
-                          width: 24,
+                          'assets/images/Usericon.png',
+                          height: width * 0.06,
+                          width: width * 0.06,
                           fit: BoxFit.contain,
                         ),
                       ),
@@ -57,8 +73,8 @@ class _DashboardState extends State<Dashboard> {
                         child: Row(
                           children: [
                             const Icon(Icons.logout),
-                            const SizedBox(width: 8),
-                            const Text('language Option'),
+                            SizedBox(width: width * 0.02),
+                            Text('language'.tr()),
                           ],
                         ),
                         onTap: () {
@@ -71,11 +87,11 @@ class _DashboardState extends State<Dashboard> {
                       ),
                     ],
                   ),
-                  const SizedBox(width: 8), // Spacing between icon and text
-                  const Text(
-                    'Welcome Back!',
+                  SizedBox(width: width * 0.02),
+                  Text(
+                    'welcome'.tr(),
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: width * 0.045,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
@@ -83,7 +99,7 @@ class _DashboardState extends State<Dashboard> {
                 ],
               ),
 
-              const SizedBox(height: 5), // Spacing after the welcome row
+              SizedBox(height: height * 0.02),
 
               // Info Container with overlay
               GestureDetector(
@@ -94,10 +110,10 @@ class _DashboardState extends State<Dashboard> {
                   );
                 },
                 child: Container(
-                  height: 211,
-                  width: 350,
+                  height: imageHeight,
+                  width: containerWidth,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(width * 0.04),
                     boxShadow: const [
                       BoxShadow(
                         color: Colors.black26,
@@ -110,35 +126,34 @@ class _DashboardState extends State<Dashboard> {
                     // Use Stack to overlay text on the image
                     children: [
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(15),
+                        borderRadius: BorderRadius.circular(width * 0.04),
                         child: Image.asset(
-                          'Assets/images/FarmImage.png',
+                          'assets/images/FarmImage.png',
                           fit: BoxFit.cover,
-                          height: 261,
-                          width: 360,
+                          width: double.infinity,
+                          height: double.infinity,
                         ),
                       ),
                       Positioned(
                         bottom: 0,
-                        left: 3,
+                        left: width * 0.01,
+                        right: width * 0.01,
                         child: Container(
-                          width: 343.5,
-                          height: 74, // Set height to 74
-                          decoration: const BoxDecoration(
-                            color: Color.fromARGB(
-                                123, 0, 0, 0), // Semi-transparent background
+                          height: imageHeight * 0.35,
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(123, 0, 0, 0),
                             borderRadius: BorderRadius.vertical(
-                                bottom: Radius.circular(
-                                    15)), // Match the image border radius
+                              bottom: Radius.circular(width * 0.04),
+                            ),
                           ),
-                          child: const Center(
+                          child: Center(
                             child: Padding(
-                              padding: EdgeInsets.all(8.0),
+                              padding: EdgeInsets.all(width * 0.02),
                               child: Text(
-                                'Learn how Corn Disease Detection helps thousands of farmers',
+                                'learn_how_cdd_helps'.tr(),
                                 textAlign: TextAlign.left,
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: width * 0.035,
                                   fontWeight: FontWeight.w500,
                                   color: Colors.white, // Text color
                                 ),
@@ -152,63 +167,60 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
 
-              const SizedBox(height: 5), // Spacing
+              SizedBox(height: height * 0.02),
 
               // Scan Container with Stroke Design
               Container(
-                height: 120,
-                width: 350,
+                height: scanContainerHeight,
+                width: containerWidth,
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFFFFF),
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(
-                      color: Colors.black, width: 2), // Stroke design
+                  borderRadius: BorderRadius.circular(width * 0.04),
+                  border: Border.all(color: Colors.black, width: 2),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(width * 0.04),
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
                           Image.asset(
-                            'Assets/images/scan.png',
-                            height: 24,
-                            width: 24,
+                            'assets/images/scan.png',
+                            height: width * 0.05,
+                            width: width * 0.05,
                           ),
-                          const SizedBox(width: 5),
-                          const Expanded(
+                          SizedBox(width: width * 0.02),
+                          Expanded(
                             child: Text(
-                              'Know maize diseases with AI - Powered CDD',
-                              style: TextStyle(fontSize: 12.5),
+                              'know_maize_diseases'.tr(),
+                              style: TextStyle(fontSize: width * 0.035),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
-                      // Custom Scan Now Button
                       SizedBox(
-                        width: double.infinity, // Full width
+                        width: double.infinity,
                         child: OutlinedButton(
                           onPressed: () {
                             Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(
-                                  builder: (context) => const Scan()),
+                              MaterialPageRoute(builder: (context) => const Scan()),
                             );
                           },
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.black, // Text color
-                            side: const BorderSide(
-                                color: Colors.black), // Border color
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 5), // Padding
+                            foregroundColor: Colors.black,
+                            side: const BorderSide(color: Colors.black),
+                            padding: EdgeInsets.symmetric(vertical: height * 0.01),
                             shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(15), // Rounded corners
+                              borderRadius: BorderRadius.circular(width * 0.04),
                             ),
                           ),
-                          child: Text('Scan Now'),
+                          child: Text(
+                            'scan_now'.tr(),
+                            style: TextStyle(fontSize: width * 0.03),
+                          ),
                         ),
                       ),
                     ],
@@ -216,43 +228,46 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
 
-              const SizedBox(height: 5), // Spacing
+              SizedBox(height: height * 0.02),
 
               // Recent Diagnoses Section with Stroke Design
               Row(
                 children: [
-                  Image.asset('Assets/images/search.png',
-                      height: 14, width: 14),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'Recent Diagnoses',
+                  Image.asset(
+                    'assets/images/search.png',
+                    height: width * 0.04,
+                    width: width * 0.04,
+                  ),
+                  SizedBox(width: width * 0.02),
+                  Text(
+                    'recent_diagnoses'.tr(),
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: width * 0.045,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: height * 0.02),
               Container(
-                height: 205, // Adjust height as needed
-                width: 350,
+                height: diagnosesHeight,
+                width: containerWidth,
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFFFFF),
-                  borderRadius: BorderRadius.circular(25),
-                  border: Border.all(
-                      color: Colors.black, width: 2), // Stroke design
+                  borderRadius: BorderRadius.circular(width * 0.06),
+                  border: Border.all(color: Colors.black, width: 2),
                 ),
                 child: SingleChildScrollView(
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: EdgeInsets.all(width * 0.04),
                     child: Column(
-                      children: List.generate(diagnoses.length, (index) {
+                      children: diagnoses.map((diagnosis) {
                         return _buildDiagnosisItem(
-                          diagnoses[index]['disease']!,
-                          diagnoses[index]['date']!,
+                          diagnosis['disease']!,
+                          diagnosis['date']!,
+                          width,
                         );
-                      }),
+                      }).toList(),
                     ),
                   ),
                 ),
@@ -261,75 +276,11 @@ class _DashboardState extends State<Dashboard> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        onTap: (index) {
-          if (index == 1) {
-            // When scan tab is clicked
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const Scan()),
-            );
-          } else if (index == 2) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const Diagnoses(),
-              ),
-            );
-          }
-        },
-        elevation: 10,
-        selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
-        unselectedItemColor: Colors.grey,
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(
-            icon: Image.asset('Assets/images/Home.png', height: 24, width: 24),
-            label: 'Home',
-            activeIcon: Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFF45DFB1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: const EdgeInsets.all(15),
-              child:
-                  Image.asset('Assets/images/Home.png', height: 24, width: 24),
-            ),
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset('Assets/images/ScanNavBar.png',
-                height: 24, width: 24),
-            label: 'Scan',
-            activeIcon: Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFF45DFB1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: const EdgeInsets.all(15),
-              child: Image.asset('Assets/images/ScanNavBar.png',
-                  height: 24, width: 24),
-            ),
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset('Assets/images/DiagnosIcon.png',
-                height: 24, width: 24),
-            label: 'Diagnoses',
-            activeIcon: Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFF45DFB1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: const EdgeInsets.all(15),
-              child: Image.asset('Assets/images/DiagnosIcon.png',
-                  height: 24, width: 24),
-            ),
-          ),
-        ],
-      ),
+      bottomNavigationBar: _buildBottomNavigationBar(width),
     );
   }
 
-  Widget _buildDiagnosisItem(String disease, String date) {
+  Widget _buildDiagnosisItem(String disease, String date, double width) {
     return InkWell(
       // Add InkWell for tap functionality
       onTap: () {
@@ -342,35 +293,89 @@ class _DashboardState extends State<Dashboard> {
         );
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        padding: EdgeInsets.symmetric(vertical: width * 0.02),
         child: Row(
           children: [
             Image.asset(
-              'Assets/images/CommonRust.png',
-              height: 40,
-              width: 40,
+              'assets/images/CommonRust.png',
+              height: width * 0.1,
+              width: width * 0.1,
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: width * 0.02),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   disease,
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: TextStyle(
+                    fontSize: width * 0.04,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
                   date,
-                  style: const TextStyle(
-                    fontSize: 14,
+                  style: TextStyle(
+                    fontSize: width * 0.035,
                     color: Colors.grey,
                   ),
                 ),
               ],
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomNavigationBar(double width) {
+    return BottomNavigationBar(
+      currentIndex: 0,
+      onTap: (index) {
+        if (index == 1) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const Scan()),
+          );
+        } else if (index == 2) {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const Diagnoses()),
+          );
+        }
+      },
+      elevation: 10,
+      selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
+      unselectedItemColor: Colors.grey,
+      type: BottomNavigationBarType.fixed,
+      selectedFontSize: width * 0.025,
+      unselectedFontSize: width * 0.025,
+      iconSize: width * 0.05,
+      items: [
+        _buildNavigationBarItem('Home', 'home', width),
+        _buildNavigationBarItem('ScanNavBar', 'scan', width),
+        _buildNavigationBarItem('DiagnosIcon', 'diagnose', width),
+      ],
+    );
+  }
+
+  BottomNavigationBarItem _buildNavigationBarItem(
+      String iconName, String label, double width) {
+    return BottomNavigationBarItem(
+      icon: Image.asset(
+        'assets/images/$iconName.png',
+        height: width * 0.05,
+        width: width * 0.05,
+      ),
+      label: label.tr(),
+      activeIcon: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF45DFB1),
+          borderRadius: BorderRadius.circular(width * 0.025),
+        ),
+        padding: EdgeInsets.all(width * 0.02),
+        child: Image.asset(
+          'assets/images/$iconName.png',
+          height: width * 0.05,
+          width: width * 0.05,
         ),
       ),
     );

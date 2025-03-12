@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
@@ -48,7 +47,7 @@ class WelcomePageState extends State<WelcomePage> {
               SizedBox(
                 height: 379,
                 width: 325,
-                child: Image.asset('Assets/images/Logo.png', fit: BoxFit.cover),
+                child: Image.asset('assets/images/Logo.png', fit: BoxFit.cover),
               ),
               const SizedBox(height: 30),
               // Added CircularProgressIndicator

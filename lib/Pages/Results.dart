@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-// import './Dashboard.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'Diagnoses.dart';
 
 class Results extends StatelessWidget {
@@ -25,7 +25,7 @@ class Results extends StatelessWidget {
             MaterialPageRoute(builder: (context) => const Diagnoses()),
           ),
         ),
-        title: const Text('Result'),
+        title: Text('result'.tr()),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -42,7 +42,7 @@ class Results extends StatelessWidget {
               ClipRRect(
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
                 child: Image.asset(
-                  'Assets/images/rustImage.png',
+                  'assets/images/rustImage.png',
                   width: double.infinity,
                   height: 200,
                   fit: BoxFit.cover,
@@ -86,18 +86,18 @@ class Results extends StatelessWidget {
                     const SizedBox(height: 20),
 
                     // Disease Description
-                    const Text(
-                      'Disease Description:',
-                      style: TextStyle(
+                    Text(
+                      'disease_description'.tr(),
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Common rust in maize, caused by Puccinia sorghi, shows as reddish-brown pustules on leaves, affecting photosynthesis and yield, especially in cool, moist climates. Prevent it by using resistant varieties, rotating crops, ensuring good plant spacing, and monitoring for early signs. Fungicides can help if applied promptly, and removing infected residue after harvest minimizes future risk.',
-                      style: TextStyle(
+                    Text(
+                      'common_rust_description'.tr(),
+                      style: const TextStyle(
                         fontSize: 14,
                         color: Colors.white,
                       ),
@@ -106,9 +106,9 @@ class Results extends StatelessWidget {
                     const SizedBox(height: 20),
 
                     // Prevention Tips
-                    const Text(
-                      'Prevention Tips:',
-                      style: TextStyle(
+                    Text(
+                      'disease_prevention'.tr(),
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -116,12 +116,12 @@ class Results extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     _buildPreventionTip(
-                      '1. Choose Resistant Varieties:',
-                      'Use rust-resistant maize varieties to lower the risk of severe infection and boost natural plant defense.',
+                      'resistant_varieties_title'.tr(),
+                      'resistant_varieties_desc'.tr(),
                     ),
                     _buildPreventionTip(
-                      '2. Rotate Crops:',
-                      'Rotate maize with non-host crops like soybeans to disrupt the disease life cycle and reduce spore buildup.',
+                      'crop_rotation_title'.tr(),
+                      'crop_rotation_desc'.tr(),
                     ),
                     _buildPreventionTip(
                       '3. Optimize Plant Spacing:',
@@ -151,18 +151,19 @@ class Results extends StatelessWidget {
 
   Widget _buildPreventionTip(String title, String description) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
+      padding: const EdgeInsets.only(bottom: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
             style: const TextStyle(
+              fontSize: 16,
               fontWeight: FontWeight.bold,
-              fontSize: 14,
               color: Colors.white,
             ),
           ),
+          const SizedBox(height: 4),
           Text(
             description,
             style: const TextStyle(

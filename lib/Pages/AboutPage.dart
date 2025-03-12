@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Get screen size
+    final Size screenSize = MediaQuery.of(context).size;
+    // Calculate responsive text sizes
+    final double titleSize = screenSize.width * 0.06; // 6% of screen width
+    final double subtitleSize = screenSize.width * 0.05; // 5% of screen width
+    final double bodySize = screenSize.width * 0.04; // 4% of screen width
+    final double smallSize = screenSize.width * 0.035; // 3.5% of screen width
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8EFE8),
       appBar: AppBar(
@@ -14,26 +24,28 @@ class AboutPage extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'About CDD',
+        title: AutoSizeText(
+          'about_cdd'.tr(),
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
-            fontSize: 24,
+            fontSize: titleSize,
           ),
+          maxLines: 1,
+          minFontSize: 16,
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
+        padding: EdgeInsets.all(screenSize.width * 0.05),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // App Logo/Image with gradient overlay
             Center(
               child: Container(
-                height: 200,
+                height: screenSize.height * 0.25, // 25% of screen height
                 width: double.infinity,
-                margin: const EdgeInsets.symmetric(vertical: 20),
+                margin: EdgeInsets.symmetric(vertical: screenSize.height * 0.02),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: [
@@ -49,7 +61,7 @@ class AboutPage extends StatelessWidget {
                   child: Stack(
                     children: [
                       Image.asset(
-                        'Assets/images/FarmImage.png',
+                        'assets/images/FarmImage.png',
                         fit: BoxFit.cover,
                         width: double.infinity,
                         height: double.infinity,
@@ -66,16 +78,19 @@ class AboutPage extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const Positioned(
-                        bottom: 20,
-                        left: 20,
-                        child: Text(
-                          'Empowering Farmers\nwith AI Technology',
+                      Positioned(
+                        bottom: screenSize.height * 0.02,
+                        left: screenSize.width * 0.05,
+                        right: screenSize.width * 0.05,
+                        child: AutoSizeText(
+                          'empowering_farmers'.tr(),
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 24,
+                            fontSize: subtitleSize,
                             fontWeight: FontWeight.bold,
                           ),
+                          maxLines: 2,
+                          minFontSize: 14,
                         ),
                       ),
                     ],
@@ -86,7 +101,7 @@ class AboutPage extends StatelessWidget {
 
             // What is CDD Section
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(screenSize.width * 0.05),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
@@ -100,32 +115,34 @@ class AboutPage extends StatelessWidget {
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text(
-                    'What is CDD?',
+                    'what_is_cdd'.tr(),
                     style: TextStyle(
-                      fontSize: 22,
+                      fontSize: subtitleSize,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF14919B),
                     ),
                   ),
-                  SizedBox(height: 16),
-                  Text(
-                    'Corn Disease Detection (CDD) is an innovative AI-powered application designed to help farmers identify and manage corn diseases effectively. Our mission is to enhance crop health monitoring and improve agricultural productivity.',
+                  SizedBox(height: screenSize.height * 0.02),
+                  AutoSizeText(
+                    'cdd_description'.tr(),
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: bodySize,
                       height: 1.6,
                       color: Color(0xFF333333),
                     ),
+                    minFontSize: 12,
+                    maxLines: 10,
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: screenSize.height * 0.02),
 
             // Features Section
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(screenSize.width * 0.05),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
@@ -140,46 +157,47 @@ class AboutPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Key Features',
+                  Text(
+                    'key_features'.tr(),
                     style: TextStyle(
-                      fontSize: 22,
+                      fontSize: subtitleSize,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF14919B),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: screenSize.height * 0.02),
                   _buildFeatureItem(
+                    context: context,
                     icon: Icons.camera_alt,
-                    title: 'Real-time Detection',
-                    description:
-                        'Instantly analyze corn leaves using your device camera',
+                    title: 'real_time_detection'.tr(),
+                    description: 'real_time_description'.tr(),
                   ),
                   _buildFeatureItem(
+                    context: context,
                     icon: Icons.info_outline,
-                    title: 'Disease Information',
-                    description:
-                        'Detailed information about identified diseases and treatment recommendations',
+                    title: 'disease_info'.tr(),
+                    description: 'disease_info_description'.tr(),
                   ),
                   _buildFeatureItem(
+                    context: context,
                     icon: Icons.history,
-                    title: 'History Tracking',
-                    description: 'Keep track of all previous disease diagnoses',
+                    title: 'history_tracking'.tr(),
+                    description: 'history_description'.tr(),
                   ),
                   _buildFeatureItem(
+                    context: context,
                     icon: Icons.psychology,
-                    title: 'Expert Guidance',
-                    description:
-                        'AI-powered analysis based on extensive agricultural research',
+                    title: 'expert_guidance'.tr(),
+                    description: 'expert_description'.tr(),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: screenSize.height * 0.02),
 
             // How to Use Section
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(screenSize.width * 0.05),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
@@ -194,24 +212,23 @@ class AboutPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'How to Use',
+                  Text(
+                    'how_to_use'.tr(),
                     style: TextStyle(
-                      fontSize: 22,
+                      fontSize: subtitleSize,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF14919B),
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  _buildStepItem('1', 'Open the app and tap on "Scan Now"'),
-                  _buildStepItem('2', 'Take a clear photo of the corn leaf'),
-                  _buildStepItem('3', 'Wait for AI analysis'),
-                  _buildStepItem(
-                      '4', 'View detailed results and recommendations'),
+                  SizedBox(height: screenSize.height * 0.02),
+                  _buildStepItem(context, '1', 'step_1'.tr()),
+                  _buildStepItem(context, '2', 'step_2'.tr()),
+                  _buildStepItem(context, '3', 'step_3'.tr()),
+                  _buildStepItem(context, '4', 'step_4'.tr()),
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: screenSize.height * 0.02),
           ],
         ),
       ),
@@ -219,44 +236,56 @@ class AboutPage extends StatelessWidget {
   }
 
   Widget _buildFeatureItem({
+    required BuildContext context,
     required IconData icon,
     required String title,
     required String description,
   }) {
+    final Size screenSize = MediaQuery.of(context).size;
+    final double featureTitleSize = screenSize.width * 0.045;
+    final double featureDescSize = screenSize.width * 0.035;
+
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
+      padding: EdgeInsets.only(bottom: screenSize.height * 0.02),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(screenSize.width * 0.03),
             decoration: BoxDecoration(
               color: const Color(0xFF45DFB1).withOpacity(0.2),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, size: 24, color: const Color(0xFF45DFB1)),
+            child: Icon(icon, 
+              size: screenSize.width * 0.06, 
+              color: const Color(0xFF45DFB1)
+            ),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: screenSize.width * 0.04),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                AutoSizeText(
                   title,
-                  style: const TextStyle(
-                    fontSize: 18,
+                  style: TextStyle(
+                    fontSize: featureTitleSize,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF333333),
                   ),
+                  maxLines: 2,
+                  minFontSize: 12,
                 ),
-                const SizedBox(height: 6),
-                Text(
+                SizedBox(height: screenSize.height * 0.01),
+                AutoSizeText(
                   description,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: featureDescSize,
                     height: 1.5,
                     color: Colors.grey[600],
                   ),
+                  maxLines: 4,
+                  minFontSize: 10,
                 ),
               ],
             ),
@@ -266,14 +295,17 @@ class AboutPage extends StatelessWidget {
     );
   }
 
-  Widget _buildStepItem(String number, String description) {
+  Widget _buildStepItem(BuildContext context, String number, String description) {
+    final Size screenSize = MediaQuery.of(context).size;
+    final double stepTextSize = screenSize.width * 0.04;
+
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.only(bottom: screenSize.height * 0.02),
       child: Row(
         children: [
           Container(
-            width: 32,
-            height: 32,
+            width: screenSize.width * 0.08,
+            height: screenSize.width * 0.08,
             decoration: BoxDecoration(
               color: const Color(0xFF45DFB1).withOpacity(0.2),
               borderRadius: BorderRadius.circular(10),
@@ -281,23 +313,25 @@ class AboutPage extends StatelessWidget {
             child: Center(
               child: Text(
                 number,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Color(0xFF45DFB1),
                   fontWeight: FontWeight.bold,
-                  fontSize: 16,
+                  fontSize: stepTextSize,
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: screenSize.width * 0.04),
           Expanded(
-            child: Text(
+            child: AutoSizeText(
               description,
-              style: const TextStyle(
-                fontSize: 16,
+              style: TextStyle(
+                fontSize: stepTextSize,
                 color: Color(0xFF333333),
                 height: 1.5,
               ),
+              maxLines: 3,
+              minFontSize: 12,
             ),
           ),
         ],

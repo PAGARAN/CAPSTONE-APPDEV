@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import './Dashboard.dart';
 import './Results.dart';
 import './Scan.dart';
@@ -8,6 +10,12 @@ class Diagnoses extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get screen dimensions for responsive sizing
+    final screenSize = MediaQuery.of(context).size;
+    final double titleSize = screenSize.width * 0.05; // 5% of screen width
+    final double subtitleSize = screenSize.width * 0.04; // 4% of screen width
+    final double bodySize = screenSize.width * 0.035; // 3.5% of screen width
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8EFE8),
       appBar: AppBar(
@@ -16,113 +24,74 @@ class Diagnoses extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => Dashboard()),
+            MaterialPageRoute(builder: (context) => const Dashboard()),
           ),
         ),
-        title: const Text('Recent Results'),
+        title: AutoSizeText(
+          'recent_results'.tr(),
+          style: TextStyle(fontSize: titleSize),
+          maxLines: 1,
+          minFontSize: 16,
+        ),
         actions: [
           TextButton(
             onPressed: () {
               // TODO: Implement export report functionality
             },
-            child: const Text('Export Report'),
+            child: AutoSizeText(
+              'export_report'.tr(),
+              style: TextStyle(fontSize: bodySize),
+              maxLines: 1,
+              minFontSize: 12,
+            ),
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          _buildDiagnosisCard(
-            context,
-            'Rust',
-            'Common in rust, most conditions, rust appears as orange/brown spots on leaves. Spreads quickly, reducing photosynthesis and yield.',
-            'Assets/images/rustImage.png',
-            'Just now',
+      body: SafeArea(
+        child: ListView(
+          padding: EdgeInsets.fromLTRB(
+            screenSize.width * 0.04,
+            screenSize.width * 0.04,
+            screenSize.width * 0.04,
+            screenSize.width * 0.2,
           ),
-          _buildDiagnosisCard(
-            context,
-            'Phaeosphaeria',
-            'Caused by Phaeosphaeria maydis length, this disease results in small, brown spots with yellow halos, leading to reduced crop health and browning.',
-            'Assets/images/phaeosphaeriaImage.png',
-            'Today',
-          ),
-          _buildDiagnosisCard(
-            context,
-            'Nothern Leaf Blight',
-            'Shows up as long, cigar-shaped lesions. It develops in moderate temps with high humidity. It can quickly spread to impact corn production.',
-            'Assets/images/northern_leaf_blightImage.png',
-            'Yesterday',
-          ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 2,
-        onTap: (index) {
-          if (index == 0) {
-            Navigator.pushReplacement(
+          children: [
+            _buildDiagnosisCard(
               context,
-              MaterialPageRoute(builder: (context) => Dashboard()),
-            );
-          } else if (index == 1) {
-            Navigator.pushReplacement(
+              'rust'.tr(),
+              'rust_description'.tr(),
+              'assets/images/rustImage.png',
+              'just_now'.tr(),
+            ),
+            _buildDiagnosisCard(
               context,
-              MaterialPageRoute(builder: (context) => Scan()),
-            );
-          }
-        },
-        elevation: 10,
-        selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
-        unselectedItemColor: Colors.grey,
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(
-            icon: Image.asset('Assets/images/Home.png', height: 24, width: 24),
-            label: 'Home',
-            activeIcon: Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFF45DFB1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: const EdgeInsets.all(15),
-              child:
-                  Image.asset('Assets/images/Home.png', height: 24, width: 24),
+              'phaeosphaeria'.tr(),
+              'phaeosphaeria_description'.tr(),
+              'assets/images/phaeosphaeriaImage.png',
+              'today'.tr(),
             ),
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset('Assets/images/ScanNavBar.png',
-                height: 24, width: 24),
-            label: 'Scan',
-            activeIcon: Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFF45DFB1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: const EdgeInsets.all(15),
-              child: Image.asset('Assets/images/ScanNavBar.png',
-                  height: 24, width: 24),
+            _buildDiagnosisCard(
+              context,
+              'northern_leaf_blight'.tr(),
+              'Shows up as long, cigar-shaped lesions. It develops in moderate temps with high humidity. It can quickly spread to impact corn production.',
+              'assets/images/northern_leaf_blightImage.png',
+              'Yesterday',
             ),
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset('Assets/images/DiagnosIcon.png',
-                height: 24, width: 24),
-            label: 'Diagnoses',
-            activeIcon: Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFF45DFB1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: const EdgeInsets.all(15),
-              child: Image.asset('Assets/images/DiagnosIcon.png',
-                  height: 24, width: 24),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
+      bottomNavigationBar: _buildBottomNavigationBar(context),
     );
   }
 
   Widget _buildDiagnosisCard(BuildContext context, String title,
       String description, String imagePath, String timeAgo) {
+    final screenSize = MediaQuery.of(context).size;
+    final double titleSize = screenSize.width * 0.045; // 4.5% of screen width
+    final double descriptionSize = screenSize.width * 0.035; // 3.5% of screen width
+    final double timeSize = screenSize.width * 0.03; // 3% of screen width
+    final double imageHeight = screenSize.height * 0.2; // 20% of screen height
+
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
@@ -134,46 +103,57 @@ class Diagnoses extends StatelessWidget {
         ),
       ),
       child: Card(
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: EdgeInsets.only(bottom: screenSize.width * 0.03),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(screenSize.width * 0.03),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(12)),
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(screenSize.width * 0.03),
+              ),
               child: Image.asset(
                 imagePath,
                 width: double.infinity,
-                height: 150,
+                height: imageHeight,
                 fit: BoxFit.cover,
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(screenSize.width * 0.03),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  AutoSizeText(
                     title,
-                    style: const TextStyle(
-                      fontSize: 20,
+                    style: TextStyle(
+                      fontSize: titleSize,
                       fontWeight: FontWeight.bold,
                     ),
+                    maxLines: 1,
+                    minFontSize: 14,
                   ),
-                  const SizedBox(height: 8),
-                  Text(
+                  SizedBox(height: screenSize.height * 0.01),
+                  AutoSizeText(
                     description,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.grey,
+                      fontSize: descriptionSize,
                     ),
+                    maxLines: 3,
+                    minFontSize: 12,
                   ),
-                  const SizedBox(height: 8),
-                  Text(
+                  SizedBox(height: screenSize.height * 0.01),
+                  AutoSizeText(
                     timeAgo,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.grey,
-                      fontSize: 12,
+                      fontSize: timeSize,
                     ),
+                    maxLines: 1,
+                    minFontSize: 10,
                   ),
                 ],
               ),
@@ -181,6 +161,80 @@ class Diagnoses extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildBottomNavigationBar(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final double iconSize = screenSize.width * 0.05; // 5% of screen width
+    final double fontSize = screenSize.width * 0.03; // 3% of screen width
+
+    return BottomNavigationBar(
+      currentIndex: 2,
+      onTap: (index) {
+        if (index == 0) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const Dashboard()),
+          );
+        } else if (index == 1) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const Scan()),
+          );
+        }
+      },
+      elevation: 10,
+      selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
+      unselectedItemColor: Colors.grey,
+      type: BottomNavigationBarType.fixed,
+      selectedFontSize: fontSize,
+      unselectedFontSize: fontSize,
+      iconSize: iconSize,
+      items: [
+        BottomNavigationBarItem(
+          icon: Image.asset('assets/images/Home.png',
+              height: iconSize, width: iconSize),
+          label: 'home'.tr(),
+          activeIcon: Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF45DFB1),
+              borderRadius: BorderRadius.circular(screenSize.width * 0.025),
+            ),
+            padding: EdgeInsets.all(screenSize.width * 0.02),
+            child: Image.asset('assets/images/Home.png',
+                height: iconSize, width: iconSize),
+          ),
+        ),
+        BottomNavigationBarItem(
+          icon: Image.asset('assets/images/ScanNavBar.png',
+              height: iconSize, width: iconSize),
+          label: 'scan'.tr(),
+          activeIcon: Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF45DFB1),
+              borderRadius: BorderRadius.circular(screenSize.width * 0.025),
+            ),
+            padding: EdgeInsets.all(screenSize.width * 0.02),
+            child: Image.asset('assets/images/ScanNavBar.png',
+                height: iconSize, width: iconSize),
+          ),
+        ),
+        BottomNavigationBarItem(
+          icon: Image.asset('assets/images/DiagnosIcon.png',
+              height: iconSize, width: iconSize),
+          label: 'diagnoses'.tr(),
+          activeIcon: Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF45DFB1),
+              borderRadius: BorderRadius.circular(screenSize.width * 0.025),
+            ),
+            padding: EdgeInsets.all(screenSize.width * 0.02),
+            child: Image.asset('assets/images/DiagnosIcon.png',
+                height: iconSize, width: iconSize),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -1,10 +1,7 @@
 name: corn_disease_detection
 description: "A new Flutter project."
-# The following line prevents the package from being accidentally published to
-# pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: 'none'
 
-# The following defines the version and build number for your application.
 version: 1.0.0+1
 
 environment:
@@ -13,42 +10,39 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  firebase_core: ^2.0.0
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
-  image_picker: ^0.8.9  # Using a stable version
+  flutter_localizations:
+    sdk: flutter
+  easy_localization: ^3.0.2
+  intl: ^0.19.0
+  image_picker: ^1.0.7
+  cupertino_icons: ^1.0.2
+  auto_size_text: ^3.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_launcher_icons: ^0.13.1
-
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
   flutter_lints: ^2.0.0
 
 flutter:
   uses-material-design: true
-
-  # To add assets to your application, add an assets section, like this:
   assets:
-    - Assets/images/Logo.png
-    - Assets/images/Usericon.png
-    - Assets/images/FarmImage.png
-    - Assets/images/scan.png
-    - Assets/images/search.png
-    - Assets/images/Home.png
-    - Assets/images/ScanNavBar.png
-    - Assets/images/DiagnosIcon.png
-    - Assets/images/CommonRust.png
-    - Assets/images/rustImage.png
-    - Assets/images/phaeosphaeriaImage.png
-    - Assets/images/northern_leaf_blightImage.png
+    - assets/
+    - assets/translations/
+    - assets/images/
+    - assets/translations/en.json
+    - assets/translations/tl.json
+    - assets/translations/ceb.json
+    - assets/images/Logo.png
+    - assets/images/Usericon.png
+    - assets/images/FarmImage.png
+    - assets/images/search.png
+    - assets/images/Home.png
+    - assets/images/ScanNavBar.png
+    - assets/images/DiagnosIcon.png
+    - assets/images/CommonRust.png
+    - assets/images/rustImage.png
+    - assets/images/phaeosphaeriaImage.png
+    - assets/images/northern_leaf_blightImage.png
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a
@@ -69,5 +63,5 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "Assets/icon/Logo.png"  # Update this line to match your actual file path
+  image_path: "assets/images/Logo.png"  # Update this path as well
   min_sdk_android: 21 # android min sdk min:16, default 21
