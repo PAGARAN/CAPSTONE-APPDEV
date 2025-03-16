@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import './Diagnoses.dart';
 import './Scan.dart';
 import './Results.dart';
@@ -9,7 +10,7 @@ class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
 
   @override
-  _DashboardState createState() => _DashboardState();
+  State<Dashboard> createState() => _DashboardState();
 }
 
 class _DashboardState extends State<Dashboard> {
@@ -31,7 +32,7 @@ class _DashboardState extends State<Dashboard> {
     // Calculate responsive dimensions
     final containerWidth = width * 0.9; // 90% of screen width
     final imageHeight = height * 0.25; // 25% of available height
-    final scanContainerHeight = height * 0.15; // 15% of available height
+    final scanContainerHeight = height * 0.17; // Increased from 0.15 to 0.17 (17% of available height)
     final diagnosesHeight = height * 0.3; // 30% of available height
 
     return Scaffold(
@@ -72,28 +73,36 @@ class _DashboardState extends State<Dashboard> {
                       PopupMenuItem(
                         child: Row(
                           children: [
-                            const Icon(Icons.logout),
+                            const Icon(Icons.language), // Changed to language icon for better context
                             SizedBox(width: width * 0.02),
-                            Text('language'.tr()),
+                            Text(
+                              'language'.tr(),
+                              style: TextStyle(
+                                fontSize: width * 0.035,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ],
                         ),
                         onTap: () {
                           // Add a small delay to avoid navigation conflicts
                           Future.delayed(Duration.zero, () {
-                            Navigator.pushReplacementNamed(
-                                context, '/language');
+                            Navigator.pushReplacementNamed(context, '/language');
                           });
                         },
                       ),
                     ],
                   ),
                   SizedBox(width: width * 0.02),
-                  Text(
-                    'welcome'.tr(),
-                    style: TextStyle(
-                      fontSize: width * 0.045,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                  Expanded(
+                    child: Text(
+                      'welcome'.tr(),
+                      style: TextStyle(
+                        fontSize: width * 0.045,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
@@ -136,29 +145,26 @@ class _DashboardState extends State<Dashboard> {
                       ),
                       Positioned(
                         bottom: 0,
-                        left: width * 0.01,
-                        right: width * 0.01,
+                        left: 0,
+                        right: 0,
                         child: Container(
                           height: imageHeight * 0.35,
                           decoration: BoxDecoration(
-                            color: const Color.fromARGB(123, 0, 0, 0),
+                            color: Colors.black.withOpacity(0.5),
                             borderRadius: BorderRadius.vertical(
                               bottom: Radius.circular(width * 0.04),
                             ),
                           ),
-                          child: Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(width * 0.02),
-                              child: Text(
-                                'learn_how_cdd_helps'.tr(),
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                  fontSize: width * 0.035,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white, // Text color
-                                ),
-                              ),
+                          padding: EdgeInsets.all(width * 0.02),
+                          child: AutoSizeText(
+                            'learn_how_cdd_helps'.tr(),
+                            style: TextStyle(
+                              fontSize: width * 0.035,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white,
                             ),
+                            minFontSize: 10,
+                            maxLines: 2,
                           ),
                         ),
                       ),
@@ -211,15 +217,18 @@ class _DashboardState extends State<Dashboard> {
                           },
                           style: OutlinedButton.styleFrom(
                             foregroundColor: Colors.black,
-                            side: const BorderSide(color: Colors.black),
-                            padding: EdgeInsets.symmetric(vertical: height * 0.01),
+                            side: const BorderSide(color: Colors.black, width: 2.2),
+                            padding: EdgeInsets.symmetric(vertical: height * 0.015), // Back to original larger padding
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(width * 0.04),
                             ),
                           ),
                           child: Text(
                             'scan_now'.tr(),
-                            style: TextStyle(fontSize: width * 0.03),
+                            style: TextStyle(
+                              fontSize: width * 0.035,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                       ),
@@ -239,11 +248,15 @@ class _DashboardState extends State<Dashboard> {
                     width: width * 0.04,
                   ),
                   SizedBox(width: width * 0.02),
-                  Text(
-                    'recent_diagnoses'.tr(),
-                    style: TextStyle(
-                      fontSize: width * 0.045,
-                      fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: AutoSizeText(
+                      'recent_diagnoses'.tr(),
+                      style: TextStyle(
+                        fontSize: width * 0.045,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      minFontSize: 12,
+                      maxLines: 1,
                     ),
                   ),
                 ],
@@ -302,24 +315,30 @@ class _DashboardState extends State<Dashboard> {
               width: width * 0.1,
             ),
             SizedBox(width: width * 0.02),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  disease,
-                  style: TextStyle(
-                    fontSize: width * 0.04,
-                    fontWeight: FontWeight.bold,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AutoSizeText(
+                    disease,
+                    style: TextStyle(
+                      fontSize: width * 0.04,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    minFontSize: 10,
+                    maxLines: 1,
                   ),
-                ),
-                Text(
-                  date,
-                  style: TextStyle(
-                    fontSize: width * 0.035,
-                    color: Colors.grey,
+                  AutoSizeText(
+                    date,
+                    style: TextStyle(
+                      fontSize: width * 0.035,
+                      color: Colors.grey,
+                    ),
+                    minFontSize: 8,
+                    maxLines: 1,
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
