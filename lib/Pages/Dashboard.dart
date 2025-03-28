@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import './Diagnoses.dart';
 import './Scan.dart';
 import './Results.dart';
+import './Diagnoses.dart';
 import './AboutPage.dart';
+import '../database/database_helper.dart';
+import 'dart:io';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -14,12 +16,11 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  // Sample data for recent diagnoses
-  final List<Map<String, String>> diagnoses = [
-    {'disease': 'Common Rust'.tr(), 'date': '3h_ago'.tr()},
-    {'disease': 'Common Rust'.tr(), 'date': 'Nov_4_2024'.tr()},
-    {'disease': 'Common Rust'.tr(), 'date': 'Nov_11_2024'.tr()},
-  ];
+  Future<List<Map<String, dynamic>>> _getRecentDiagnoses() async {
+    final dbHelper = DatabaseHelper();
+    final diagnoses = await dbHelper.getDiagnoses();
+    return diagnoses.take(3).toList(); // Only show last 3 diagnoses
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -273,14 +274,20 @@ class _DashboardState extends State<Dashboard> {
                 child: SingleChildScrollView(
                   child: Padding(
                     padding: EdgeInsets.all(width * 0.04),
-                    child: Column(
-                      children: diagnoses.map((diagnosis) {
-                        return _buildDiagnosisItem(
-                          diagnosis['disease']!,
-                          diagnosis['date']!,
-                          width,
+                    child: FutureBuilder<List<Map<String, dynamic>>>(
+                      future: _getRecentDiagnoses(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) return Container();
+                        return Column(
+                          children: snapshot.data!.map((diagnosis) {
+                            return _buildDiagnosisItem(
+                              diagnosis['disease'],
+                              diagnosis['date'],
+                              width,
+                            );
+                          }).toList(),
                         );
-                      }).toList(),
+                      },
                     ),
                   ),
                 ),
@@ -295,24 +302,56 @@ class _DashboardState extends State<Dashboard> {
 
   Widget _buildDiagnosisItem(String disease, String date, double width) {
     return InkWell(
-      // Add InkWell for tap functionality
       onTap: () {
-        // Navigate to the Result page with the diagnosis details
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Results(disease: disease, date: date),
-          ),
-        );
+        // Get the diagnosis details from the database
+        DatabaseHelper().getDiagnoses().then((diagnoses) {
+          final diagnosis = diagnoses.firstWhere(
+            (d) => d['disease'] == disease && d['date'] == date,
+            orElse: () => {'imagePath': ''}, // Default empty path if not found
+          );
+          
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Results(
+                disease: disease,
+                date: date,
+                imagePath: diagnosis['imagePath'] ?? '', // Add the imagePath
+              ),
+            ),
+          );
+        });
       },
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: width * 0.02),
         child: Row(
           children: [
-            Image.asset(
-              'assets/images/CommonRust.png',
-              height: width * 0.1,
-              width: width * 0.1,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(width * 0.02),
+              child: FutureBuilder<List<Map<String, dynamic>>>(
+                future: DatabaseHelper().getDiagnoses(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) return Container();
+                  final diagnosis = snapshot.data!.firstWhere(
+                    (d) => d['disease'] == disease && d['date'] == date,
+                    orElse: () => {'imagePath': ''},
+                  );
+                  
+                  return diagnosis['imagePath']?.isNotEmpty == true
+                      ? Image.file(
+                          File(diagnosis['imagePath']),
+                          height: width * 0.1,
+                          width: width * 0.1,
+                          fit: BoxFit.cover,
+                        )
+                      : Image.asset(
+                          'assets/images/CommonRust.png',
+                          height: width * 0.1,
+                          width: width * 0.1,
+                          fit: BoxFit.cover,
+                        );
+                },
+              ),
             ),
             SizedBox(width: width * 0.02),
             Expanded(

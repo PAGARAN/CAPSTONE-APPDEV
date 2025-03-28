@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'Diagnoses.dart';
+import 'dart:io';
 
 class Results extends StatelessWidget {
   final String disease;
   final String date;
+  final String imagePath;
 
   const Results({
     super.key,
     required this.disease,
     required this.date,
+    required this.imagePath,
   });
 
   @override
@@ -41,8 +44,8 @@ class Results extends StatelessWidget {
               // Disease Image
               ClipRRect(
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
-                child: Image.asset(
-                  'assets/images/rustImage.png',
+                child: Image.file(
+                  File(imagePath),
                   width: double.infinity,
                   height: 200,
                   fit: BoxFit.cover,

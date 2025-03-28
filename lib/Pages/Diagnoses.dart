@@ -4,6 +4,8 @@ import 'package:auto_size_text/auto_size_text.dart';
 import './Dashboard.dart';
 import './Results.dart';
 import './Scan.dart';
+import '../database/database_helper.dart';
+import 'dart:io';
 
 class Diagnoses extends StatelessWidget {
   const Diagnoses({super.key});
@@ -48,36 +50,30 @@ class Diagnoses extends StatelessWidget {
         ],
       ),
       body: SafeArea(
-        child: ListView(
-          padding: EdgeInsets.fromLTRB(
-            screenSize.width * 0.04,
-            screenSize.width * 0.04,
-            screenSize.width * 0.04,
-            screenSize.width * 0.2,
-          ),
-          children: [
-            _buildDiagnosisCard(
-              context,
-              'rust'.tr(),
-              'rust_description'.tr(),
-              'assets/images/rustImage.png',
-              'just_now'.tr(),
-            ),
-            _buildDiagnosisCard(
-              context,
-              'phaeosphaeria'.tr(),
-              'phaeosphaeria_description'.tr(),
-              'assets/images/phaeosphaeriaImage.png',
-              'today'.tr(),
-            ),
-            _buildDiagnosisCard(
-              context,
-              'northern_leaf_blight'.tr(),
-              'Shows up as long, cigar-shaped lesions. It develops in moderate temps with high humidity. It can quickly spread to impact corn production.',
-              'assets/images/northern_leaf_blightImage.png',
-              'Yesterday',
-            ),
-          ],
+        child: FutureBuilder<List<Map<String, dynamic>>>(
+          future: DatabaseHelper().getDiagnoses(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(child: Text('no_diagnoses'.tr()));
+            }
+            return ListView.builder(
+              padding: EdgeInsets.all(16),
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                final diagnosis = snapshot.data![index];
+                return _buildDiagnosisCard(
+                  context,
+                  diagnosis['disease'],
+                  'disease_description'.tr(),
+                  diagnosis['imagePath'], // Use the actual image path from database
+                  diagnosis['date'],
+                );
+              },
+            );
+          },
         ),
       ),
       bottomNavigationBar: _buildBottomNavigationBar(context),
@@ -97,8 +93,7 @@ class Diagnoses extends StatelessWidget {
         context,
         MaterialPageRoute(
           builder: (context) => Results(
-            disease: title,
-            date: timeAgo,
+            disease: title, date: timeAgo, imagePath: imagePath,
           ),
         ),
       ),
@@ -114,12 +109,19 @@ class Diagnoses extends StatelessWidget {
               borderRadius: BorderRadius.vertical(
                 top: Radius.circular(screenSize.width * 0.03),
               ),
-              child: Image.asset(
-                imagePath,
-                width: double.infinity,
-                height: imageHeight,
-                fit: BoxFit.cover,
-              ),
+              child: imagePath.isNotEmpty
+                  ? Image.file(
+                      File(imagePath),
+                      width: double.infinity,
+                      height: imageHeight,
+                      fit: BoxFit.cover,
+                    )
+                  : Image.asset(
+                      'assets/images/CommonRust.png',
+                      width: double.infinity,
+                      height: imageHeight,
+                      fit: BoxFit.cover,
+                    ),
             ),
             Padding(
               padding: EdgeInsets.all(screenSize.width * 0.03),

@@ -1,9 +1,11 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import './Dashboard.dart';
 import './Results.dart';
+import './Diagnoses.dart';
+import '../database/database_helper.dart';
 
 class Scan extends StatefulWidget {
   const Scan({super.key});
@@ -30,12 +32,17 @@ class _ScanState extends State<Scan> {
         });
         
         if (context.mounted) {
+          final dbHelper = DatabaseHelper();
+          final imagePath = await dbHelper.saveImage(_selectedImage!);
+          await dbHelper.insertDiagnosis('Rust', imagePath);
+          
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const Results(
+              builder: (context) => Results(
                 disease: 'Rust',
-                date: 'Just now',
+                date: DateTime.now().toIso8601String(),
+                imagePath: imagePath,
               ),
             ),
           );
@@ -65,12 +72,17 @@ class _ScanState extends State<Scan> {
         });
         
         if (context.mounted) {
+          final dbHelper = DatabaseHelper();
+          final imagePath = await dbHelper.saveImage(_selectedImage!);
+          await dbHelper.insertDiagnosis('Rust', imagePath);
+          
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const Results(
+              builder: (context) => Results(
                 disease: 'Rust',
-                date: 'Just now',
+                date: DateTime.now().toIso8601String(),
+                imagePath: imagePath,
               ),
             ),
           );
@@ -87,6 +99,9 @@ class _ScanState extends State<Scan> {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final double iconSize = screenSize.width * 0.05;
+    
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
@@ -213,6 +228,73 @@ class _ScanState extends State<Scan> {
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 1, // Set to 1 for Scan page
+        onTap: (index) {
+          if (index == 0) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const Dashboard()),
+            );
+          } else if (index == 2) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const Diagnoses()),
+            );
+          }
+        },
+        elevation: 10,
+        selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
+        unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
+        selectedFontSize: screenSize.width * 0.03,
+        unselectedFontSize: screenSize.width * 0.03,
+        iconSize: iconSize,
+        items: [
+          BottomNavigationBarItem(
+            icon: Image.asset('assets/images/Home.png',
+                height: iconSize, width: iconSize),
+            label: 'home'.tr(),
+            activeIcon: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF45DFB1),
+                borderRadius: BorderRadius.circular(screenSize.width * 0.025),
+              ),
+              padding: EdgeInsets.all(screenSize.width * 0.02),
+              child: Image.asset('assets/images/Home.png',
+                  height: iconSize, width: iconSize),
+            ),
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset('assets/images/ScanNavBar.png',
+                height: iconSize, width: iconSize),
+            label: 'scan'.tr(),
+            activeIcon: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF45DFB1),
+                borderRadius: BorderRadius.circular(screenSize.width * 0.025),
+              ),
+              padding: EdgeInsets.all(screenSize.width * 0.02),
+              child: Image.asset('assets/images/ScanNavBar.png',
+                  height: iconSize, width: iconSize),
+            ),
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset('assets/images/DiagnosIcon.png',
+                height: iconSize, width: iconSize),
+            label: 'diagnoses'.tr(),
+            activeIcon: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF45DFB1),
+                borderRadius: BorderRadius.circular(screenSize.width * 0.025),
+              ),
+              padding: EdgeInsets.all(screenSize.width * 0.02),
+              child: Image.asset('assets/images/DiagnosIcon.png',
+                  height: iconSize, width: iconSize),
+            ),
+          ),
+        ],
       ),
     );
   }
