@@ -7,13 +7,15 @@ class Results extends StatelessWidget {
   final String disease;
   final String date;
   final String imagePath;
+  final double confidence; // Add this parameter
 
   const Results({
-    super.key,
+    Key? key,
     required this.disease,
     required this.date,
     required this.imagePath,
-  });
+    this.confidence = 0.0, // Default value
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +45,8 @@ class Results extends StatelessWidget {
             children: [
               // Disease Image
               ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(15)),
                 child: Image.file(
                   File(imagePath),
                   width: double.infinity,

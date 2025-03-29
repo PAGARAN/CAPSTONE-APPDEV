@@ -1,242 +1,80 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:auto_size_text/auto_size_text.dart';
-import './Dashboard.dart';
-import './Results.dart';
-import './Scan.dart';
-import '../database/database_helper.dart';
-import 'dart:io';
+import '../services/database_helper.dart';
+import 'Results.dart';
 
-class Diagnoses extends StatelessWidget {
-  const Diagnoses({super.key});
+class Diagnoses extends StatefulWidget {
+  const Diagnoses({Key? key}) : super(key: key);
+
+  @override
+  State<Diagnoses> createState() => _DiagnosesState();
+}
+
+class _DiagnosesState extends State<Diagnoses> {
+  final DatabaseHelper _databaseHelper = DatabaseHelper();
 
   @override
   Widget build(BuildContext context) {
-    // Get screen dimensions for responsive sizing
-    final screenSize = MediaQuery.of(context).size;
-    final double titleSize = screenSize.width * 0.05; // 5% of screen width
-    final double subtitleSize = screenSize.width * 0.04; // 4% of screen width
-    final double bodySize = screenSize.width * 0.035; // 3.5% of screen width
-
     return Scaffold(
-      backgroundColor: const Color(0xFFF8EFE8),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF8EFE8),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const Dashboard()),
-          ),
-        ),
-        title: AutoSizeText(
-          'recent_results'.tr(),
-          style: TextStyle(fontSize: titleSize),
-          maxLines: 1,
-          minFontSize: 16,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              // TODO: Implement export report functionality
+        title: Text('diagnoses'.tr()),
+        backgroundColor: Colors.green,
+      ),
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: _databaseHelper.getDiagnoses(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('no_diagnoses'.tr()));
+          }
+
+          return ListView.builder(
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              final diagnosis = snapshot.data![index];
+              final imagePath = diagnosis['image_path'];
+              final disease = diagnosis['disease'];
+              final date = DateTime.parse(diagnosis['date']);
+              final formattedDate = DateFormat('yyyy-MM-dd HH:mm').format(date);
+
+              return Card(
+                margin: const EdgeInsets.all(8.0),
+                child: ListTile(
+                  leading: SizedBox(
+                    width: 60,
+                    height: 60,
+                    child: imagePath != null
+                        ? Image.file(File(imagePath), fit: BoxFit.cover)
+                        : const Icon(Icons.image_not_supported),
+                  ),
+                  title: Text(disease),
+                  subtitle: Text(formattedDate),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Results(
+                          disease: disease,
+                          date: diagnosis['date'],
+                          imagePath: imagePath,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
             },
-            child: AutoSizeText(
-              'export_report'.tr(),
-              style: TextStyle(fontSize: bodySize),
-              maxLines: 1,
-              minFontSize: 12,
-            ),
-          ),
-        ],
-      ),
-      body: SafeArea(
-        child: FutureBuilder<List<Map<String, dynamic>>>(
-          future: DatabaseHelper().getDiagnoses(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return Center(child: Text('no_diagnoses'.tr()));
-            }
-            return ListView.builder(
-              padding: EdgeInsets.all(16),
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                final diagnosis = snapshot.data![index];
-                return _buildDiagnosisCard(
-                  context,
-                  diagnosis['disease'],
-                  'disease_description'.tr(),
-                  diagnosis['imagePath'], // Use the actual image path from database
-                  diagnosis['date'],
-                );
-              },
-            );
-          },
-        ),
-      ),
-      bottomNavigationBar: _buildBottomNavigationBar(context),
-    );
-  }
-
-  Widget _buildDiagnosisCard(BuildContext context, String title,
-      String description, String imagePath, String timeAgo) {
-    final screenSize = MediaQuery.of(context).size;
-    final double titleSize = screenSize.width * 0.045; // 4.5% of screen width
-    final double descriptionSize = screenSize.width * 0.035; // 3.5% of screen width
-    final double timeSize = screenSize.width * 0.03; // 3% of screen width
-    final double imageHeight = screenSize.height * 0.2; // 20% of screen height
-
-    return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => Results(
-            disease: title, date: timeAgo, imagePath: imagePath,
-          ),
-        ),
-      ),
-      child: Card(
-        margin: EdgeInsets.only(bottom: screenSize.width * 0.03),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(screenSize.width * 0.03),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(screenSize.width * 0.03),
-              ),
-              child: imagePath.isNotEmpty
-                  ? Image.file(
-                      File(imagePath),
-                      width: double.infinity,
-                      height: imageHeight,
-                      fit: BoxFit.cover,
-                    )
-                  : Image.asset(
-                      'assets/images/CommonRust.png',
-                      width: double.infinity,
-                      height: imageHeight,
-                      fit: BoxFit.cover,
-                    ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(screenSize.width * 0.03),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AutoSizeText(
-                    title,
-                    style: TextStyle(
-                      fontSize: titleSize,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 1,
-                    minFontSize: 14,
-                  ),
-                  SizedBox(height: screenSize.height * 0.01),
-                  AutoSizeText(
-                    description,
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: descriptionSize,
-                    ),
-                    maxLines: 3,
-                    minFontSize: 12,
-                  ),
-                  SizedBox(height: screenSize.height * 0.01),
-                  AutoSizeText(
-                    timeAgo,
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: timeSize,
-                    ),
-                    maxLines: 1,
-                    minFontSize: 10,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBottomNavigationBar(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
-    final double iconSize = screenSize.width * 0.05; // 5% of screen width
-    final double fontSize = screenSize.width * 0.03; // 3% of screen width
-
-    return BottomNavigationBar(
-      currentIndex: 2,
-      onTap: (index) {
-        if (index == 0) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const Dashboard()),
           );
-        } else if (index == 1) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const Scan()),
-          );
-        }
-      },
-      elevation: 10,
-      selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
-      unselectedItemColor: Colors.grey,
-      type: BottomNavigationBarType.fixed,
-      selectedFontSize: fontSize,
-      unselectedFontSize: fontSize,
-      iconSize: iconSize,
-      items: [
-        BottomNavigationBarItem(
-          icon: Image.asset('assets/images/Home.png',
-              height: iconSize, width: iconSize),
-          label: 'home'.tr(),
-          activeIcon: Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF45DFB1),
-              borderRadius: BorderRadius.circular(screenSize.width * 0.025),
-            ),
-            padding: EdgeInsets.all(screenSize.width * 0.02),
-            child: Image.asset('assets/images/Home.png',
-                height: iconSize, width: iconSize),
-          ),
-        ),
-        BottomNavigationBarItem(
-          icon: Image.asset('assets/images/ScanNavBar.png',
-              height: iconSize, width: iconSize),
-          label: 'scan'.tr(),
-          activeIcon: Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF45DFB1),
-              borderRadius: BorderRadius.circular(screenSize.width * 0.025),
-            ),
-            padding: EdgeInsets.all(screenSize.width * 0.02),
-            child: Image.asset('assets/images/ScanNavBar.png',
-                height: iconSize, width: iconSize),
-          ),
-        ),
-        BottomNavigationBarItem(
-          icon: Image.asset('assets/images/DiagnosIcon.png',
-              height: iconSize, width: iconSize),
-          label: 'diagnoses'.tr(),
-          activeIcon: Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF45DFB1),
-              borderRadius: BorderRadius.circular(screenSize.width * 0.025),
-            ),
-            padding: EdgeInsets.all(screenSize.width * 0.02),
-            child: Image.asset('assets/images/DiagnosIcon.png',
-                height: iconSize, width: iconSize),
-          ),
-        ),
-      ],
+        },
+      ),
     );
   }
 }

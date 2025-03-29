@@ -6,6 +6,7 @@ import './Dashboard.dart';
 import './Results.dart';
 import './Diagnoses.dart';
 import '../database/database_helper.dart';
+import '../services/model_service.dart';
 
 class Scan extends StatefulWidget {
   const Scan({super.key});
@@ -17,6 +18,18 @@ class Scan extends StatefulWidget {
 class _ScanState extends State<Scan> {
   final ImagePicker _picker = ImagePicker();
   File? _selectedImage;
+  final ModelService _modelService = ModelService();
+  bool _isProcessing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeModel();
+  }
+
+  Future<void> _initializeModel() async {
+    await _modelService.initialize();
+  }
 
   Future<void> _pickImageFromGallery(BuildContext context) async {
     try {
@@ -25,33 +38,45 @@ class _ScanState extends State<Scan> {
         maxWidth: 1800,
         maxHeight: 1800,
       );
-      
+
       if (pickedFile != null) {
         setState(() {
           _selectedImage = File(pickedFile.path);
+          _isProcessing = true;
         });
-        
+
+        // Process with model
+        final results = await _modelService.detectDisease(_selectedImage!);
+
         if (context.mounted) {
           final dbHelper = DatabaseHelper();
           final imagePath = await dbHelper.saveImage(_selectedImage!);
-          await dbHelper.insertDiagnosis('Rust', imagePath);
-          
+          await dbHelper.insertDiagnosis(results['disease'], imagePath);
+
+          setState(() {
+            _isProcessing = false;
+          });
+
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => Results(
-                disease: 'Rust',
+                disease: results['disease'],
                 date: DateTime.now().toIso8601String(),
                 imagePath: imagePath,
+                confidence: results['confidence'],
               ),
             ),
           );
         }
       }
     } catch (e) {
+      setState(() {
+        _isProcessing = false;
+      });
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to pick image: $e')),
+          SnackBar(content: Text('Failed to process image: $e')),
         );
       }
     }
@@ -65,43 +90,61 @@ class _ScanState extends State<Scan> {
         maxHeight: 1800,
         preferredCameraDevice: CameraDevice.rear,
       );
-      
+
       if (pickedFile != null) {
         setState(() {
           _selectedImage = File(pickedFile.path);
+          _isProcessing = true;
         });
-        
+
+        // Process with model
+        final results = await _modelService.detectDisease(_selectedImage!);
+
         if (context.mounted) {
           final dbHelper = DatabaseHelper();
           final imagePath = await dbHelper.saveImage(_selectedImage!);
-          await dbHelper.insertDiagnosis('Rust', imagePath);
-          
+          await dbHelper.insertDiagnosis(results['disease'], imagePath);
+
+          setState(() {
+            _isProcessing = false;
+          });
+
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => Results(
-                disease: 'Rust',
+                disease: results['disease'],
                 date: DateTime.now().toIso8601String(),
                 imagePath: imagePath,
+                confidence: results['confidence'],
               ),
             ),
           );
         }
       }
     } catch (e) {
+      setState(() {
+        _isProcessing = false;
+      });
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to capture image: $e')),
+          SnackBar(content: Text('Failed to process image: $e')),
         );
       }
     }
   }
 
   @override
+  void dispose() {
+    _modelService.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final double iconSize = screenSize.width * 0.05;
-    
+
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
@@ -137,13 +180,14 @@ class _ScanState extends State<Scan> {
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
                       onPressed: () => Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => const Dashboard()),
+                        MaterialPageRoute(
+                            builder: (context) => const Dashboard()),
                       ),
                     ),
                   ],
                 ),
               ),
-              
+
               // Main Content
               Expanded(
                 child: Padding(
