@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart';
 
 class ModelService {
+  // Make sure this path exactly matches your assets configuration in pubspec.yaml
   static const String modelPath = 'assets/models/best_int8.tflite';
   static const int inputSize = 640; // YOLOv8 typically uses 640x640
 
@@ -14,69 +15,220 @@ class ModelService {
   bool _isInitialized = false;
 
   Future<void> initialize() async {
-    if (_isInitialized) return;
+    try {
+      if (_isInitialized) return;
 
-    final appDir = await getApplicationDocumentsDirectory();
-    final modelFile = File('${appDir.path}/best_int8.tflite');
+      // Close any existing interpreter to prevent memory leaks
+      try {
+        _interpreter.close();
+      } catch (e) {
+        // Ignore if interpreter wasn't initialized
+      }
 
-    if (!await modelFile.exists()) {
-      final modelData = await rootBundle.load(modelPath);
-      await modelFile.writeAsBytes(modelData.buffer.asUint8List());
+      final appDir = await getApplicationDocumentsDirectory();
+      final modelFile = File('${appDir.path}/best_int8.tflite');
+
+      if (!await modelFile.exists()) {
+        print("Model file doesn't exist, copying from assets...");
+        try {
+          final modelData = await rootBundle.load(modelPath);
+          await modelFile.writeAsBytes(modelData.buffer.asUint8List());
+          print("Model file copied successfully: ${modelFile.path}");
+          print("Model file size: ${await modelFile.length()} bytes");
+        } catch (e) {
+          print("Error copying model file: $e");
+          rethrow;
+        }
+      } else {
+        print("Using existing model file: ${modelFile.path}");
+        print("Model file size: ${await modelFile.length()} bytes");
+      }
+
+      // Try loading directly from assets first
+      try {
+        print("Attempting to load model from assets...");
+        final interpreterOptions = InterpreterOptions()..threads = 2;
+        _interpreter =
+            await Interpreter.fromAsset(modelPath, options: interpreterOptions);
+        _isInitialized = true;
+        print("Model loaded from assets successfully");
+      } catch (assetError) {
+        print("Failed to load from assets: $assetError");
+
+        // Fall back to loading from file
+        try {
+          print("Attempting to load model from file...");
+          final interpreterOptions = InterpreterOptions()..threads = 2;
+          _interpreter = await Interpreter.fromFile(modelFile,
+              options: interpreterOptions);
+          _isInitialized = true;
+          print("Model loaded from file successfully");
+        } catch (fileError) {
+          print("Failed to load from file: $fileError");
+          rethrow;
+        }
+      }
+
+      // Print model details for debugging
+      if (_isInitialized) {
+        try {
+          // Get input and output tensor details
+          final inputTensor = _interpreter.getInputTensor(0);
+          final outputTensor = _interpreter.getOutputTensor(0);
+
+          print("Input tensor shape: ${inputTensor.shape}");
+          print("Input tensor type: ${inputTensor.type}");
+          print("Output tensor shape: ${outputTensor.shape}");
+          print("Output tensor type: ${outputTensor.type}");
+        } catch (e) {
+          print("Error getting tensor info: $e");
+        }
+      }
+    } catch (e, stackTrace) {
+      print("Error initializing model: $e");
+      print("Stack trace: $stackTrace");
+      _isInitialized = false;
+      rethrow;
     }
-
-    _interpreter = await Interpreter.fromFile(modelFile);
-    _isInitialized = true;
   }
 
   Future<Map<String, dynamic>> detectDisease(File imageFile) async {
-    if (!_isInitialized) await initialize();
+    try {
+      if (!_isInitialized) {
+        await initialize();
+        if (!_isInitialized) {
+          throw Exception("Model failed to initialize");
+        }
+      }
 
-    final imageBytes = await imageFile.readAsBytes();
-    var image = img.decodeImage(imageBytes)!;
-    var resizedImage =
-        img.copyResize(image, width: inputSize, height: inputSize);
+      // Load and process the image
+      final imageBytes = await imageFile.readAsBytes();
+      var image = img.decodeImage(imageBytes);
 
-    var inputTensor = List.generate(
-      inputSize,
-      (y) => List.generate(
-        inputSize,
-        (x) {
+      if (image == null) {
+        throw Exception("Failed to decode image");
+      }
+
+      print("Original image size: ${image.width}x${image.height}");
+
+      // Resize image to match model input size
+      var resizedImage =
+          img.copyResize(image, width: inputSize, height: inputSize);
+      print("Resized image to: ${resizedImage.width}x${resizedImage.height}");
+
+      // Get input and output tensor shapes
+      final inputShape = _interpreter.getInputTensor(0).shape;
+      final outputShape = _interpreter.getOutputTensor(0).shape;
+
+      print("Model expects input shape: $inputShape");
+      print("Model provides output shape: $outputShape");
+
+      // Prepare input data as a flat list first
+      List<double> flatInputData = [];
+
+      // Fill with normalized pixel values
+      for (int y = 0; y < inputSize; y++) {
+        for (int x = 0; x < inputSize; x++) {
           final pixel = resizedImage.getPixel(x, y);
-          return [
-            pixel.r / 255.0,
-            pixel.g / 255.0,
-            pixel.b / 255.0,
-          ];
-        },
-      ),
-    );
+          flatInputData.add(pixel.r / 255.0);
+          flatInputData.add(pixel.g / 255.0);
+          flatInputData.add(pixel.b / 255.0);
+        }
+      }
 
-    var outputShape = [1, 3]; // Adjust based on your model's output shape
-    var output =
-        List.filled(outputShape[0] * outputShape[1], 0.0).reshape(outputShape);
+      // Reshape according to input shape
+      var inputData;
+      if (inputShape.length == 4) {
+        // For [1, height, width, 3] format
+        inputData = [
+          flatInputData.reshape([inputSize, inputSize, 3])
+        ];
+      } else {
+        // Fallback
+        inputData = flatInputData.reshape(inputShape);
+      }
 
-    _interpreter.run(inputTensor, output);
+      // Create output buffer with the correct shape
+      var outputBuffer;
+      if (outputShape.length == 2) {
+        // For [1, 4] format
+        outputBuffer = List.generate(
+            outputShape[0], (_) => List<double>.filled(outputShape[1], 0.0));
+      } else {
+        outputBuffer =
+            List<double>.filled(outputShape.reduce((a, b) => a * b), 0.0);
+      }
 
-    String predictedDisease = "Healthy";
-    double confidence = 0.0;
-    List<Map<String, dynamic>> detections = [];
+      // Run inference with properly typed buffers
+      print("Running inference...");
+      _interpreter.run(inputData, outputBuffer);
 
-    if (output[0][0] > 0.5) {
-      predictedDisease = "Common Rust";
-      confidence = output[0][0];
-    } else if (output[0][1] > 0.5) {
-      predictedDisease = "Northern Leaf Blight";
-      confidence = output[0][1];
-    } else if (output[0][2] > 0.5) {
-      predictedDisease = "Gray Leaf Spot";
-      confidence = output[0][2];
+      // Print all output values for debugging
+      print("Inference complete. Raw output: $outputBuffer");
+      if (outputShape.length == 2) {
+        for (int i = 0; i < outputShape[1]; i++) {
+          print("Class $i confidence: ${outputBuffer[0][i]}");
+        }
+      }
+
+      // Process results
+      String predictedDisease = "Healthy";
+      double confidence = 0.0;
+
+      // Find the class with highest confidence
+      var maxIdx = 0;
+      var maxVal = 0.0;
+
+      if (outputShape.length == 2) {
+        // For [1, 4] format
+        maxVal = outputBuffer[0][0];
+        for (int i = 1; i < outputShape[1]; i++) {
+          if (outputBuffer[0][i] > maxVal) {
+            maxVal = outputBuffer[0][i];
+            maxIdx = i;
+          }
+        }
+      } else {
+        maxVal = outputBuffer[0];
+        for (int i = 1; i < outputBuffer.length; i++) {
+          if (outputBuffer[i] > maxVal) {
+            maxVal = outputBuffer[i];
+            maxIdx = i;
+          }
+        }
+      }
+
+      confidence = maxVal;
+
+      // Apply confidence threshold of 0.3
+      if (confidence >= 0.2) {
+        // Map index to disease name - FIXED ORDER BASED ON MODEL OUTPUT
+        if (maxIdx == 0) {
+          predictedDisease = "Common Rust";
+        } else if (maxIdx == 1) {
+          predictedDisease = "Gray Leaf Spot";
+        } else if (maxIdx == 2) {
+          predictedDisease = "Healthy";
+        } else if (maxIdx == 3) {
+          predictedDisease = "Northern Leaf Blight";
+        }
+      } else {
+        predictedDisease = "Unknown (Low Confidence)";
+      }
+
+      print("Predicted class index: $maxIdx with confidence: $confidence");
+      print("Predicted disease: $predictedDisease");
+
+      return {
+        'disease': predictedDisease,
+        'confidence': confidence,
+        'detections': [],
+      };
+    } catch (e, stackTrace) {
+      print("Error in detectDisease: $e");
+      print("Stack trace: $stackTrace");
+      rethrow;
     }
-
-    return {
-      'disease': predictedDisease,
-      'confidence': confidence,
-      'detections': detections,
-    };
   }
 
   void dispose() {

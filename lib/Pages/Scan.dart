@@ -31,6 +31,55 @@ class _ScanState extends State<Scan> {
     await _modelService.initialize();
   }
 
+  Future<void> _processImage(File imageFile, BuildContext context) async {
+    try {
+      setState(() {
+        _isProcessing = true;
+      });
+
+      // Process with model
+      final results = await _modelService.detectDisease(imageFile);
+
+      if (context.mounted) {
+        final dbHelper = DatabaseHelper();
+        final imagePath = await dbHelper.saveImage(imageFile);
+        await dbHelper.insertDiagnosis(results['disease'], imagePath);
+
+        setState(() {
+          _isProcessing = false;
+        });
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Results(
+              disease: results['disease'],
+              date: DateTime.now().toIso8601String(),
+              imagePath: imagePath,
+              confidence: results['confidence'],
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _isProcessing = false;
+      });
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to process image: $e'),
+            duration: Duration(seconds: 10),
+            action: SnackBarAction(
+              label: 'OK',
+              onPressed: () {},
+            ),
+          ),
+        );
+      }
+    }
+  }
+
   Future<void> _pickImageFromGallery(BuildContext context) async {
     try {
       final XFile? pickedFile = await _picker.pickImage(
@@ -42,41 +91,13 @@ class _ScanState extends State<Scan> {
       if (pickedFile != null) {
         setState(() {
           _selectedImage = File(pickedFile.path);
-          _isProcessing = true;
         });
-
-        // Process with model
-        final results = await _modelService.detectDisease(_selectedImage!);
-
-        if (context.mounted) {
-          final dbHelper = DatabaseHelper();
-          final imagePath = await dbHelper.saveImage(_selectedImage!);
-          await dbHelper.insertDiagnosis(results['disease'], imagePath);
-
-          setState(() {
-            _isProcessing = false;
-          });
-
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Results(
-                disease: results['disease'],
-                date: DateTime.now().toIso8601String(),
-                imagePath: imagePath,
-                confidence: results['confidence'],
-              ),
-            ),
-          );
-        }
+        await _processImage(_selectedImage!, context);
       }
     } catch (e) {
-      setState(() {
-        _isProcessing = false;
-      });
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to process image: $e')),
+          SnackBar(content: Text('Failed to pick image: $e')),
         );
       }
     }
@@ -94,41 +115,13 @@ class _ScanState extends State<Scan> {
       if (pickedFile != null) {
         setState(() {
           _selectedImage = File(pickedFile.path);
-          _isProcessing = true;
         });
-
-        // Process with model
-        final results = await _modelService.detectDisease(_selectedImage!);
-
-        if (context.mounted) {
-          final dbHelper = DatabaseHelper();
-          final imagePath = await dbHelper.saveImage(_selectedImage!);
-          await dbHelper.insertDiagnosis(results['disease'], imagePath);
-
-          setState(() {
-            _isProcessing = false;
-          });
-
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Results(
-                disease: results['disease'],
-                date: DateTime.now().toIso8601String(),
-                imagePath: imagePath,
-                confidence: results['confidence'],
-              ),
-            ),
-          );
-        }
+        await _processImage(_selectedImage!, context);
       }
     } catch (e) {
-      setState(() {
-        _isProcessing = false;
-      });
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to process image: $e')),
+          SnackBar(content: Text('Failed to take photo: $e')),
         );
       }
     }
