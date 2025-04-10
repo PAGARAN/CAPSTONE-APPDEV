@@ -15,6 +15,14 @@ class Diagnoses extends StatefulWidget {
 
 class _DiagnosesState extends State<Diagnoses> {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
+  String _searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   Future<void> _deleteDiagnosis(Map<String, dynamic> diagnosis) async {
     try {
@@ -40,17 +48,76 @@ class _DiagnosesState extends State<Diagnoses> {
     }
   }
 
+  Widget _buildSearchBar(double width) {
+    return Container(
+      margin: EdgeInsets.symmetric(
+        horizontal: width * 0.04,
+        vertical: width * 0.02,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(width * 0.02),
+        border: Border.all(
+          color: Colors.grey.withOpacity(0.2),
+          width: 1.0,
+        ),
+      ),
+      child: TextField(
+        controller: _searchController,
+        onChanged: (value) {
+          setState(() {
+            _searchQuery = value.toLowerCase();
+          });
+        },
+        textAlignVertical: TextAlignVertical.center,
+        style: TextStyle(
+          fontSize: width * 0.045,
+          color: Colors.black87,
+        ),
+        decoration: InputDecoration(
+          isDense: true,
+          hintText: 'Search diseases'.tr(),
+          hintStyle: TextStyle(
+            fontSize: width * 0.045,
+            color: Colors.grey.withOpacity(0.6),
+          ),
+          prefixIcon: Padding(
+            padding: EdgeInsets.symmetric(horizontal: width * 0.02),
+            child: Icon(
+              Icons.search,
+              color: Colors.grey.withOpacity(0.6),
+              size: width * 0.06,
+            ),
+          ),
+          suffixIcon: _searchQuery.isNotEmpty
+              ? IconButton(
+                  icon: Icon(
+                    Icons.clear,
+                    color: Colors.grey.withOpacity(0.6),
+                    size: width * 0.06,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _searchQuery = '';
+                      _searchController.clear();
+                    });
+                  },
+                )
+              : null,
+          border: InputBorder.none,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: width * 0.02,
+            vertical: width * 0.035,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildDiagnosisList(double width) {
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: _databaseHelper.getDiagnoses(),
       builder: (context, snapshot) {
-        // Add debug print to check data
-        print("Database snapshot: ${snapshot.data}");
-        print("Connection state: ${snapshot.connectionState}");
-        if (snapshot.hasError) {
-          print("Database error: ${snapshot.error}");
-        }
-
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -105,14 +172,43 @@ class _DiagnosesState extends State<Diagnoses> {
           );
         }
 
+        // Filter diagnoses based on search query
+        final filteredDiagnoses = snapshot.data!.where((diagnosis) {
+          return diagnosis['disease'].toString().toLowerCase().contains(_searchQuery);
+        }).toList();
+
+        if (filteredDiagnoses.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height: width * 0.2),
+                Icon(
+                  Icons.search_off,
+                  size: width * 0.15,
+                  color: Colors.grey[400],
+                ),
+                SizedBox(height: width * 0.04),
+                Text(
+                  'no_matching_diagnoses'.tr(),
+                  style: TextStyle(
+                    fontSize: width * 0.04,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
         return Container(
           margin: EdgeInsets.all(width * 0.04),
           child: ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: snapshot.data!.length,
+            itemCount: filteredDiagnoses.length,
             itemBuilder: (context, index) {
-              final diagnosis = snapshot.data![index];
+              final diagnosis = filteredDiagnoses[index];
               return Container(
                 margin: EdgeInsets.only(bottom: width * 0.04),
                 decoration: BoxDecoration(
@@ -377,6 +473,7 @@ class _DiagnosesState extends State<Diagnoses> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            _buildSearchBar(width),  // Add the search bar
             _buildDiagnosisList(width),
           ],
         ),

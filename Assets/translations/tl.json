@@ -58,5 +58,7 @@
   "delete_diagnosis_confirmation": "Sigurado ka bang gusto mong tanggalin ang diagnosis na ito?",
   "delete": "Tanggalin",
   "cancel": "Kanselahin",
-  "error_deleting_diagnosis": "May error sa pagtanggal ng diagnosis"
+  "error_deleting_diagnosis": "May error sa pagtanggal ng diagnosis",
+  "search_disease": "Maghanap ng sakit",
+  "no_matching_diagnoses": "Walang nahanap na katugmang pagsusuri"
 }

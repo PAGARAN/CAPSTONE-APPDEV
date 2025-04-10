@@ -58,5 +58,7 @@
   "delete_diagnosis_confirmation": "Sigurado ka nga gusto nimong tangtangon kini nga diagnosis?",
   "delete": "Tangtanga",
   "cancel": "Kanselahon",
-  "error_deleting_diagnosis": "Error sa pagtangtang sa diagnosis"
+  "error_deleting_diagnosis": "Error sa pagtangtang sa diagnosis",
+  "search_disease": "Pangitaa ang sakit",
+  "no_matching_diagnoses": "Walay nakitang tugma nga diagnosis"
 }

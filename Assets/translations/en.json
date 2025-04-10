@@ -58,5 +58,7 @@
   "delete_diagnosis_confirmation": "Are you sure you want to delete this diagnosis?",
   "delete": "Delete",
   "cancel": "Cancel",
-  "error_deleting_diagnosis": "Error deleting diagnosis"
+  "error_deleting_diagnosis": "Error deleting diagnosis",
+  "search_disease": "Search diseases",
+  "no_matching_diagnoses": "No matching diagnoses found"
 }
