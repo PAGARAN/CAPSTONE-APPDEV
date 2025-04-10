@@ -132,58 +132,73 @@ class _DashboardState extends State<Dashboard> {
                       ),
                     ],
                   ),
-                  child: Stack(
-                    // Use Stack to overlay text on the image
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(width * 0.04),
-                        child: Image.asset(
-                          'assets/images/FarmImage.png',
-                          fit: BoxFit.cover,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(width * 0.04),
+                    child: Stack(
+                      fit: StackFit.expand, // Ensures stack fills the container
+                      children: [
+                        Container(
                           width: double.infinity,
                           height: double.infinity,
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        child: Container(
-                          height: imageHeight * 0.35,
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.5),
-                            borderRadius: BorderRadius.vertical(
-                              bottom: Radius.circular(width * 0.04),
-                            ),
-                          ),
-                          padding: EdgeInsets.all(width * 0.02),
-                          child: AutoSizeText(
-                            'learn_how_cdd_helps'.tr(),
-                            style: TextStyle(
-                              fontSize: width * 0.035,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white,
-                            ),
-                            minFontSize: 10,
-                            maxLines: 2,
+                          child: Image.asset(
+                            'assets/images/FarmImage.png',
+                            fit: BoxFit.cover,
                           ),
                         ),
-                      ),
-                    ],
+                        Positioned(
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: width * 0.04,
+                              vertical: width * 0.03,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.transparent,
+                                  Colors.black.withOpacity(0.7),
+                                ],
+                              ),
+                            ),
+                            child: AutoSizeText(
+                              'learn_how_cdd_helps'.tr(),
+                              style: TextStyle(
+                                fontSize: width * 0.035,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                              ),
+                              minFontSize: 10,
+                              maxLines: 2,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
 
               SizedBox(height: height * 0.02),
 
-              // Scan Container with Stroke Design
+              // Scan Container with Shadow Design
               Container(
                 height: scanContainerHeight,
                 width: containerWidth,
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFFFFF),
                   borderRadius: BorderRadius.circular(width * 0.04),
-                  border: Border.all(color: Colors.black, width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 8.0,
+                      spreadRadius: 1.0,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: Padding(
                   padding: EdgeInsets.all(width * 0.04),
@@ -209,20 +224,25 @@ class _DashboardState extends State<Dashboard> {
                       ),
                       SizedBox(
                         width: double.infinity,
-                        child: OutlinedButton(
+                        child: ElevatedButton(
                           onPressed: () {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(builder: (context) => const Scan()),
                             );
                           },
-                          style: OutlinedButton.styleFrom(
+                          style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.black,
-                            side: const BorderSide(color: Colors.black, width: 2.2),
-                            padding: EdgeInsets.symmetric(vertical: height * 0.015), // Back to original larger padding
+                            backgroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(vertical: height * 0.015),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(width * 0.04),
+                              side: BorderSide(
+                                color: Colors.black.withOpacity(0.1),
+                                width: 1.0,
+                              ),
                             ),
+                            elevation: 0, // Remove elevation to keep flat design with stroke
                           ),
                           child: Text(
                             'scan_now'.tr(),
@@ -240,7 +260,7 @@ class _DashboardState extends State<Dashboard> {
 
               SizedBox(height: height * 0.02),
 
-              // Recent Diagnoses Section with Stroke Design
+              // Recent Diagnoses Section with Shadow Design
               Row(
                 children: [
                   Image.asset(
@@ -269,7 +289,14 @@ class _DashboardState extends State<Dashboard> {
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFFFFF),
                   borderRadius: BorderRadius.circular(width * 0.06),
-                  border: Border.all(color: Colors.black, width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 8.0,
+                      spreadRadius: 1.0,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: SingleChildScrollView(
                   child: Padding(

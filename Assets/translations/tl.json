@@ -53,5 +53,10 @@
   "resistant_varieties_desc": "Gumamit ng mga uri ng mais na lumalaban sa kalawang upang mabawasan ang panganib ng malubhang impeksyon at mapalakas ang natural na depensa ng halaman.",
   "crop_rotation_title": "2. Pag-ikot ng mga Pananim:",
   "crop_rotation_desc": "Ikutin ang mais sa mga pananim na hindi host tulad ng soybean upang maputol ang life cycle ng sakit at mabawasan ang pagdami ng spores.",
-  "common_rust_description": "Ang karaniwang kalawang sa mais, na sanhi ng Puccinia sorghi, ay lumalabas bilang pulang-kayumangging pustula sa mga dahon, nakakaapekto sa photosynthesis at ani, lalo na sa malamig at maalinsangang klima. Maiwasan ito sa pamamagitan ng paggamit ng matitibay na varieties, pag-rotate ng mga pananim, pagtiyak ng tamang pagitan ng mga halaman, at pagsubaybay sa maagang mga palatandaan. Ang mga fungicide ay makakatulong kung agad na gagamitin, at ang pag-alis ng mga nahawaang labi pagkatapos ng ani ay nagpapababa ng panganib sa hinaharap."
+  "common_rust_description": "Ang karaniwang kalawang sa mais, na sanhi ng Puccinia sorghi, ay lumalabas bilang pulang-kayumangging pustula sa mga dahon, nakakaapekto sa photosynthesis at ani, lalo na sa malamig at maalinsangang klima. Maiwasan ito sa pamamagitan ng paggamit ng matitibay na varieties, pag-rotate ng mga pananim, pagtiyak ng tamang pagitan ng mga halaman, at pagsubaybay sa maagang mga palatandaan. Ang mga fungicide ay makakatulong kung agad na gagamitin, at ang pag-alis ng mga nahawaang labi pagkatapos ng ani ay nagpapababa ng panganib sa hinaharap.",
+  "confirm_delete": "Kumpirmahin ang Pagtanggal",
+  "delete_diagnosis_confirmation": "Sigurado ka bang gusto mong tanggalin ang diagnosis na ito?",
+  "delete": "Tanggalin",
+  "cancel": "Kanselahin",
+  "error_deleting_diagnosis": "May error sa pagtanggal ng diagnosis"
 }

@@ -53,5 +53,10 @@
   "resistant_varieties_desc": "Paggamit og mga variety sa mais nga resistente sa taya aron mapaubos ang risgo sa grabe nga impeksyon ug mapalig-on ang natural nga depensa sa tanom.",
   "crop_rotation_title": "2. Pag-rotate sa mga Tanom:",
   "crop_rotation_desc": "I-rotate ang mais uban sa mga tanom nga dili host sama sa soybean aron maputol ang life cycle sa sakit ug mamenosan ang pagdaghan sa spores.",
-  "common_rust_description": "Ang kasagarang taya sa mais, nga hinungdan sa Puccinia sorghi, makita isip pula-brown nga mga pustula sa mga dahon, nga makaapekto sa photosynthesis ug ani, ilabina sa bugnaw ug basa nga klima. Mapugngan kini pinaagi sa paggamit og lig-on nga mga variety, pag-rotate sa mga tanom, pagsiguro og sakto nga spacing sa tanom, ug pagmonitor sa sayo nga mga timailhan. Ang mga fungicide makatabang kung dali nga gamiton, ug ang pagkuha sa naimpeksyon nga mga salin human sa ani makamenos sa risgo sa umaabot."
+  "common_rust_description": "Ang kasagarang taya sa mais, nga hinungdan sa Puccinia sorghi, makita isip pula-brown nga mga pustula sa mga dahon, nga makaapekto sa photosynthesis ug ani, ilabina sa bugnaw ug basa nga klima. Mapugngan kini pinaagi sa paggamit og lig-on nga mga variety, pag-rotate sa mga tanom, pagsiguro og sakto nga spacing sa tanom, ug pagmonitor sa sayo nga mga timailhan. Ang mga fungicide makatabang kung dali nga gamiton, ug ang pagkuha sa naimpeksyon nga mga salin human sa ani makamenos sa risgo sa umaabot.",
+  "confirm_delete": "Kumpirmahon ang Pagtangtang",
+  "delete_diagnosis_confirmation": "Sigurado ka nga gusto nimong tangtangon kini nga diagnosis?",
+  "delete": "Tangtanga",
+  "cancel": "Kanselahon",
+  "error_deleting_diagnosis": "Error sa pagtangtang sa diagnosis"
 }

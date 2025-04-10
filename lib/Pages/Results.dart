@@ -1,24 +1,93 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'Diagnoses.dart';
-import 'dart:io';
+import '../database/database_helper.dart';
+import 'Dashboard.dart';
 
 class Results extends StatelessWidget {
   final String disease;
   final String date;
   final String imagePath;
-  final double confidence; // Add this parameter
+  final double? confidence;
 
   const Results({
     Key? key,
     required this.disease,
     required this.date,
     required this.imagePath,
-    this.confidence = 0.0, // Default value
+    this.confidence,
   }) : super(key: key);
+
+  Future<void> _deleteDiagnosis(BuildContext context) async {
+    final DatabaseHelper dbHelper = DatabaseHelper();
+    
+    // Show confirmation dialog
+    bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('confirm_delete'.tr()),
+          content: Text('delete_diagnosis_confirmation'.tr()),
+          actions: <Widget>[
+            TextButton(
+              child: Text('cancel'.tr()),
+              onPressed: () => Navigator.of(context).pop(false),
+            ),
+            TextButton(
+              child: Text(
+                'delete'.tr(),
+                style: const TextStyle(color: Colors.red),
+              ),
+              onPressed: () => Navigator.of(context).pop(true),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true) {
+      try {
+        // Delete the image file if it exists
+        if (imagePath.isNotEmpty) {
+          final file = File(imagePath);
+          if (await file.exists()) {
+            await file.delete();
+          }
+        }
+
+        // Get the diagnosis ID based on date and disease
+        final diagnoses = await dbHelper.getDiagnoses();
+        final diagnosis = diagnoses.firstWhere(
+          (d) => d['date'] == date && d['disease'] == disease,
+          orElse: () => {'id': -1},
+        );
+
+        if (diagnosis['id'] != -1) {
+          await dbHelper.deleteDiagnosis(diagnosis['id']);
+        }
+
+        // Navigate back to Dashboard
+        if (context.mounted) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const Dashboard()),
+            (route) => false,
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('error_deleting_diagnosis'.tr())),
+          );
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    
     return Scaffold(
       backgroundColor: const Color(0xFFF8EFE8),
       appBar: AppBar(
@@ -27,7 +96,7 @@ class Results extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const Diagnoses()),
+            MaterialPageRoute(builder: (context) => const Dashboard()),
           ),
         ),
         title: Text('result'.tr()),
