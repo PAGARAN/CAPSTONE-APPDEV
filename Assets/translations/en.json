@@ -60,5 +60,14 @@
   "cancel": "Cancel",
   "error_deleting_diagnosis": "Error deleting diagnosis",
   "search_disease": "Search diseases",
-  "no_matching_diagnoses": "No matching diagnoses found"
+  "no_matching_diagnoses": "No matching diagnoses found",
+  "select_date_range": "Select Date Range",
+  "start_date": "Start Date",
+  "end_date": "End Date",
+  "select_date": "Select Date",
+  "export_to_pdf": "Export to PDF",
+  "report_exported": "Report exported successfully",
+  "open": "Open",
+  "no_diagnoses_found": "No diagnoses found for the selected date range",
+  "error_exporting": "Error exporting report: {error}"
 }

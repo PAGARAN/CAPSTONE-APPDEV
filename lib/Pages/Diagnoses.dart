@@ -5,6 +5,7 @@ import '../database/database_helper.dart';  // Updated import path
 import 'Results.dart';
 import 'Dashboard.dart';
 import 'Scan.dart';
+import 'ExportReport.dart';
 
 class Diagnoses extends StatefulWidget {
   const Diagnoses({Key? key}) : super(key: key);
@@ -468,12 +469,23 @@ class _DiagnosesState extends State<Diagnoses> {
       appBar: AppBar(
         title: Text('recent_results'.tr()),
         backgroundColor: Colors.green,
-        automaticallyImplyLeading: false, // This removes the back button
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.download),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ExportReport()),
+              );
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _buildSearchBar(width),  // Add the search bar
+            _buildSearchBar(width),
             _buildDiagnosisList(width),
           ],
         ),
