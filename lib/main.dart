@@ -12,18 +12,19 @@ import './utils/global_materialization.dart' as custom_local;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Make sure EasyLocalization is properly initialized
   await EasyLocalization.ensureInitialized();
-
+  
   runApp(
     EasyLocalization(
       supportedLocales: const [
-        Locale('en'),
-        Locale('tl'),
+        Locale('en'), 
         Locale('ceb'),
+        Locale('tl')
       ],
-      path: 'assets/translations',
+      path: 'assets/translations', // Verify this path is correct
       fallbackLocale: const Locale('en'),
-      useOnlyLangCode: true,
       child: const MyApp(),
     ),
   );

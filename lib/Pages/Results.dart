@@ -148,7 +148,7 @@ class Results extends StatelessWidget {
 
                     const SizedBox(height: 20),
 
-                    // Disease Description
+                    // Disease Description and Prevention Tips
                     Text(
                       'disease_description'.tr(),
                       style: const TextStyle(
@@ -158,8 +158,9 @@ class Results extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
+                    // Dynamically display the correct disease description based on the disease
                     Text(
-                      'common_rust_description'.tr(),
+                      _getDiseaseDescription(disease),
                       style: const TextStyle(
                         fontSize: 14,
                         color: Colors.white,
@@ -170,7 +171,7 @@ class Results extends StatelessWidget {
 
                     // Prevention Tips
                     Text(
-                      'disease_prevention'.tr(),
+                      _getPreventionTitle(disease),
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -178,30 +179,8 @@ class Results extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    _buildPreventionTip(
-                      'resistant_varieties_title'.tr(),
-                      'resistant_varieties_desc'.tr(),
-                    ),
-                    _buildPreventionTip(
-                      'crop_rotation_title'.tr(),
-                      'crop_rotation_desc'.tr(),
-                    ),
-                    _buildPreventionTip(
-                      '3. Optimize Plant Spacing:',
-                      'Plant maize with enough spacing to improve airflow, reducing leaf moisture and fungal infection risks.',
-                    ),
-                    _buildPreventionTip(
-                      '4. Monitor Regularly:',
-                      'Regularly inspect crops, especially during moist conditions, for early detection.',
-                    ),
-                    _buildPreventionTip(
-                      '5. Apply Fungicides if Needed:',
-                      'Apply fungicides early if rust appears, following local guidelines for correct fungicide selection and timing.',
-                    ),
-                    _buildPreventionTip(
-                      '6. Remove Infected Residue:',
-                      'After harvest, clear infected residue to reduce fungal spores and lower future crop infection chances.',
-                    ),
+                    // Dynamically display the correct prevention tips based on the disease
+                    _buildDiseasePreventionTips(disease),
                   ],
                 ),
               ),
@@ -237,5 +216,192 @@ class Results extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  // Helper method to get the correct disease description based on the disease name
+  String _getDiseaseDescription(String disease) {
+    switch (disease) {
+      case 'Healthy':
+        return 'healthy_leaf_description'.tr();
+      case 'Common Rust':
+        return 'common_rust_description'.tr();
+      case 'Gray Leaf Spot':
+        return 'gray_leaf_spot_description'.tr();
+      case 'Northern Leaf Blight':
+        return 'northern_leaf_blight_description'.tr();
+      case 'Southern Corn Leaf Blight':
+        return 'southern_corn_leaf_blight_description'.tr();
+      case 'Blight':
+        return 'blight_description'.tr();
+      case 'Bacterial Streak':
+        return 'bacterial_streak_description'.tr();
+      case 'Bacterial Spot':
+        return 'bacterial_spot_description'.tr();
+      case 'Bacterial Wilt':
+        return 'bacterial_wilt_description'.tr();
+      case 'Downy Mildew':
+        return 'downy_mildew_description'.tr();
+      case 'Goss\'s Wilt':
+        return 'goss_wilt_description'.tr();
+      case 'Maize Dwarf Mosaic':
+        return 'maize_dwarf_mosaic_description'.tr();
+      case 'Maize Stunt Virus':
+        return 'maize_stunt_virus_description'.tr();
+      case 'Northern Corn Leaf Blight':
+        return 'northern_corn_leaf_blight_description'.tr();
+      case 'Northern Corn Leaf Spot':
+        return 'northern_corn_leaf_spot_description'.tr();
+      case 'Northern Corn Rot':
+        return 'northern_corn_rot_description'.tr();
+      default:
+        return 'common_rust_description'.tr(); // Default fallback
+    }
+  }
+
+  // Helper method to get the correct prevention title based on the disease name
+  String _getPreventionTitle(String disease) {
+    switch (disease) {
+      case 'Healthy':
+        return 'healthy_leaf_prevention'.tr();
+      case 'Common Rust':
+        return 'disease_prevention'.tr();
+      case 'Gray Leaf Spot':
+        return 'gray_leaf_spot_prevention'.tr();
+      case 'Northern Leaf Blight':
+      case 'Northern Corn Leaf Blight':
+        return 'northern_leaf_blight_prevention'.tr();
+      default:
+        return 'disease_prevention'.tr(); // Default fallback
+    }
+  }
+
+  // Helper method to build the prevention tips based on the disease
+  Widget _buildDiseasePreventionTips(String disease) {
+    switch (disease) {
+      case 'Healthy':
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildPreventionTip(
+              'healthy_nutrition_title'.tr(),
+              'healthy_nutrition_desc'.tr(),
+            ),
+            _buildPreventionTip(
+              'healthy_irrigation_title'.tr(),
+              'healthy_irrigation_desc'.tr(),
+            ),
+            _buildPreventionTip(
+              'healthy_monitoring_title'.tr(),
+              'healthy_monitoring_desc'.tr(),
+            ),
+          ],
+        );
+      case 'Common Rust':
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildPreventionTip(
+              'resistant_varieties_title'.tr(),
+              'resistant_varieties_desc'.tr(),
+            ),
+            _buildPreventionTip(
+              'crop_rotation_title'.tr(),
+              'crop_rotation_desc'.tr(),
+            ),
+            _buildPreventionTip(
+              '3. Optimize Plant Spacing:',
+              'Plant maize with enough spacing to improve airflow, reducing leaf moisture and fungal infection risks.',
+            ),
+            _buildPreventionTip(
+              '4. Monitor Regularly:',
+              'Regularly inspect crops, especially during moist conditions, for early detection.',
+            ),
+            _buildPreventionTip(
+              'fungicide_title'.tr(),
+              'fungicide_desc'.tr(),
+            ),
+          ],
+        );
+      case 'Gray Leaf Spot':
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildPreventionTip(
+              'gls_resistant_varieties_title'.tr(),
+              'gls_resistant_varieties_desc'.tr(),
+            ),
+            _buildPreventionTip(
+              'gls_crop_rotation_title'.tr(),
+              'gls_crop_rotation_desc'.tr(),
+            ),
+            _buildPreventionTip(
+              'gls_field_sanitation_title'.tr(),
+              'gls_field_sanitation_desc'.tr(),
+            ),
+            _buildPreventionTip(
+              'gls_fungicide_title'.tr(),
+              'gls_fungicide_desc'.tr(),
+            ),
+          ],
+        );
+      case 'Northern Leaf Blight':
+      case 'Northern Corn Leaf Blight':
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildPreventionTip(
+              'nlb_resistant_varieties_title'.tr(),
+              'nlb_resistant_varieties_desc'.tr(),
+            ),
+            _buildPreventionTip(
+              'nlb_crop_rotation_title'.tr(),
+              'nlb_crop_rotation_desc'.tr(),
+            ),
+            _buildPreventionTip(
+              'nlb_field_sanitation_title'.tr(),
+              'nlb_field_sanitation_desc'.tr(),
+            ),
+            _buildPreventionTip(
+              'nlb_avoid_continuous_title'.tr(),
+              'nlb_avoid_continuous_desc'.tr(),
+            ),
+            _buildPreventionTip(
+              'nlb_fungicide_title'.tr(),
+              'nlb_fungicide_desc'.tr(),
+            ),
+            _buildPreventionTip(
+              'nlb_plant_spacing_title'.tr(),
+              'nlb_plant_spacing_desc'.tr(),
+            ),
+            _buildPreventionTip(
+              'nlb_soil_drainage_title'.tr(),
+              'nlb_soil_drainage_desc'.tr(),
+            ),
+            _buildPreventionTip(
+              'nlb_planting_date_title'.tr(),
+              'nlb_planting_date_desc'.tr(),
+            ),
+            _buildPreventionTip(
+              'nlb_specific_fungicides_title'.tr(),
+              'nlb_specific_fungicides_desc'.tr(),
+            ),
+          ],
+        );
+      default:
+        // Default to Common Rust prevention tips
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildPreventionTip(
+              'resistant_varieties_title'.tr(),
+              'resistant_varieties_desc'.tr(),
+            ),
+            _buildPreventionTip(
+              'crop_rotation_title'.tr(),
+              'crop_rotation_desc'.tr(),
+            ),
+          ],
+        );
+    }
   }
 }
