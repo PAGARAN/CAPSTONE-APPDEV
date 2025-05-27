@@ -7,6 +7,7 @@ import './Diagnoses.dart';
 import './AboutPage.dart';
 import '../database/database_helper.dart';
 import 'dart:io';
+import '../widgets/language_selector.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -52,60 +53,67 @@ class _DashboardState extends State<Dashboard> {
 
               // User Profile and Welcome Text
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  PopupMenuButton(
-                    child: Container(
-                      height: width * 0.1, // Responsive size
-                      width: width * 0.1,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFD9D9D9),
-                        borderRadius: BorderRadius.circular(width * 0.05),
-                      ),
-                      child: Center(
-                        child: Image.asset(
-                          'assets/images/Usericon.png',
-                          height: width * 0.06,
-                          width: width * 0.06,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
-                    itemBuilder: (BuildContext context) => [
-                      PopupMenuItem(
-                        child: Row(
-                          children: [
-                            const Icon(Icons.language), // Changed to language icon for better context
-                            SizedBox(width: width * 0.02),
-                            Text(
-                              'language'.tr(),
-                              style: TextStyle(
-                                fontSize: width * 0.035,
-                                fontWeight: FontWeight.w500,
-                              ),
+                  Row(
+                    children: [
+                      PopupMenuButton(
+                        child: Container(
+                          height: width * 0.1, // Responsive size
+                          width: width * 0.1,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFD9D9D9),
+                            borderRadius: BorderRadius.circular(width * 0.05),
+                          ),
+                          child: Center(
+                            child: Image.asset(
+                              'assets/images/Usericon.png',
+                              height: width * 0.06,
+                              width: width * 0.06,
+                              fit: BoxFit.contain,
                             ),
-                          ],
+                          ),
                         ),
-                        onTap: () {
-                          // Add a small delay to avoid navigation conflicts
-                          Future.delayed(Duration.zero, () {
-                            Navigator.pushReplacementNamed(context, '/language');
-                          });
-                        },
+                        itemBuilder: (BuildContext context) => [
+                          PopupMenuItem(
+                            child: Row(
+                              children: [
+                                const Icon(Icons.info_outline),
+                                SizedBox(width: width * 0.02),
+                                Text(
+                                  'about_cdd'.tr(),
+                                  style: TextStyle(
+                                    fontSize: width * 0.035,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            onTap: () {
+                              Future.delayed(Duration.zero, () {
+                                Navigator.pushNamed(context, '/about');
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                      SizedBox(width: width * 0.02),
+                      // Replace Expanded with a Container with constraints
+                      Container(
+                        constraints: BoxConstraints(maxWidth: width * 0.6),
+                        child: Text(
+                          'welcome'.tr(), // This is the correct way to use translations
+                          style: TextStyle(
+                            fontSize: width * 0.045,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                   ),
-                  SizedBox(width: width * 0.02),
-                  Expanded(
-                    child: Text(
-                      'welcome'.tr(),
-                      style: TextStyle(
-                        fontSize: width * 0.045,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
+                  const LanguageSelector(), // Language selector aligned with welcome text
                 ],
               ),
 
@@ -334,8 +342,13 @@ class _DashboardState extends State<Dashboard> {
         DatabaseHelper().getDiagnoses().then((diagnoses) {
           final diagnosis = diagnoses.firstWhere(
             (d) => d['disease'] == disease && d['date'] == date,
-            orElse: () => {'imagePath': ''}, // Default empty path if not found
+            orElse: () => {'imagePath': '', 'confidence': null}, // Default empty values if not found
           );
+          
+          // Extract confidence value, defaulting to null if not present
+          final confidence = diagnosis['confidence'] != null 
+              ? (diagnosis['confidence'] as num).toDouble() 
+              : null;
           
           Navigator.push(
             context,
@@ -343,7 +356,8 @@ class _DashboardState extends State<Dashboard> {
               builder: (context) => Results(
                 disease: disease,
                 date: date,
-                imagePath: diagnosis['imagePath'] ?? '', // Add the imagePath
+                imagePath: diagnosis['imagePath'] ?? '',
+                confidence: confidence,
               ),
             ),
           );

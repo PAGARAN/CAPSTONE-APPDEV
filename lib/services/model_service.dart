@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 
 class ModelService {
   // Make sure this path exactly matches your assets configuration in pubspec.yaml
-  static const String modelPath = 'assets/models/best_int8_2.tflite';
+  static const String modelPath = 'assets/models/best_int8.tflite';
   static const int inputSize = 640; // YOLOv8 typically uses 640x640
 
   late Interpreter _interpreter;
@@ -26,7 +26,7 @@ class ModelService {
       }
 
       final appDir = await getApplicationDocumentsDirectory();
-      final modelFile = File('${appDir.path}/best_int8_2.tflite');
+      final modelFile = File('${appDir.path}/best_int8.tflite');
 
       if (!await modelFile.exists()) {
         print("Model file doesn't exist, copying from assets...");
@@ -172,7 +172,7 @@ class ModelService {
       }
 
       // Process results
-      String predictedDisease = "Unknown (Low Confidence)";
+      String predictedDisease = "Healthy";
       double confidence = 0.0;
 
       // Find the class with highest confidence
@@ -200,43 +200,23 @@ class ModelService {
 
       confidence = maxVal;
 
-      // Get rust confidence (index 0)
-      double rustConfidence =
-          outputShape.length == 2 ? outputBuffer[0][0] : outputBuffer[0];
-
-      // Check if any disease confidence is >= 0.1
-      bool anyDiseaseDetected = false;
-
-      // Check for diseases (indices 0, 1, 3 for rust, gray leaf spot, northern leaf blight)
-      if (outputShape.length == 2) {
-        anyDiseaseDetected = outputBuffer[0][0] >= 0.1 ||
-            outputBuffer[0][1] >= 0.1 ||
-            outputBuffer[0][3] >= 0.1;
-      } else {
-        anyDiseaseDetected = outputBuffer[0] >= 0.1 ||
-            outputBuffer[1] >= 0.1 ||
-            outputBuffer[3] >= 0.1;
-      }
-
-      if (rustConfidence >= 0.01) {
-        predictedDisease = "Common Rust";
-        confidence = rustConfidence;
-      }
-      //disease detection
-      else if (confidence >= 0.5) {
+      // Apply confidence threshold of 0.3
+      if (confidence >= 0.3) {
+        // Map index to disease name - FIXED ORDER BASED ON MODEL OUTPUT
         if (maxIdx == 0) {
           predictedDisease = "Common Rust";
         } else if (maxIdx == 1) {
           predictedDisease = "Gray Leaf Spot";
-        } else if (maxIdx == 2 && !anyDiseaseDetected) {
+        } else if (maxIdx == 2) {
           predictedDisease = "Healthy";
         } else if (maxIdx == 3) {
           predictedDisease = "Northern Leaf Blight";
         }
+      } else {
+        predictedDisease = "Unknown (Low Confidence)";
       }
 
       print("Predicted class index: $maxIdx with confidence: $confidence");
-      print("Any disease detected: $anyDiseaseDetected");
       print("Predicted disease: $predictedDisease");
 
       return {

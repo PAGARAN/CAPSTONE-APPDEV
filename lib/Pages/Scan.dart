@@ -7,6 +7,7 @@ import './Results.dart';
 import './Diagnoses.dart';
 import '../database/database_helper.dart';
 import '../services/model_service.dart';
+import '../widgets/language_selector.dart';
 
 class Scan extends StatefulWidget {
   const Scan({super.key});
@@ -39,11 +40,18 @@ class _ScanState extends State<Scan> {
 
       // Process with model
       final results = await _modelService.detectDisease(imageFile);
+      final double confidence = results['confidence'] ?? 0.0;
 
       if (context.mounted) {
         final dbHelper = DatabaseHelper();
         final imagePath = await dbHelper.saveImage(imageFile);
-        await dbHelper.insertDiagnosis(results['disease'], imagePath);
+        
+        // Always pass confidence to database
+        await dbHelper.insertDiagnosis(
+          results['disease'], 
+          imagePath,
+          confidence
+        );
 
         setState(() {
           _isProcessing = false;
@@ -56,7 +64,7 @@ class _ScanState extends State<Scan> {
               disease: results['disease'],
               date: DateTime.now().toIso8601String(),
               imagePath: imagePath,
-              confidence: results['confidence'],
+              confidence: confidence,
             ),
           ),
         );
@@ -168,6 +176,7 @@ class _ScanState extends State<Scan> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -177,6 +186,7 @@ class _ScanState extends State<Scan> {
                             builder: (context) => const Dashboard()),
                       ),
                     ),
+                    const LanguageSelector(), // Add language selector here
                   ],
                 ),
               ),

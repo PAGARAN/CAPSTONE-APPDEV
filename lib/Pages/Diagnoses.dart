@@ -6,6 +6,7 @@ import 'Results.dart';
 import 'Dashboard.dart';
 import 'Scan.dart';
 import 'ExportReport.dart';
+import '../widgets/language_selector.dart';
 
 class Diagnoses extends StatefulWidget {
   const Diagnoses({Key? key}) : super(key: key);
@@ -226,13 +227,19 @@ class _DiagnosesState extends State<Diagnoses> {
                 ),
                 child: InkWell(
                   onTap: () {
+                    // Extract confidence value, defaulting to null if not present
+                    final confidence = diagnosis['confidence'] != null 
+                        ? (diagnosis['confidence'] as num).toDouble() 
+                        : null;
+                    
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => Results(
                           disease: diagnosis['disease'],
                           date: diagnosis['date'],
-                          imagePath: diagnosis['imagePath'],
+                          imagePath: diagnosis['imagePath'] ?? '',
+                          confidence: confidence,
                         ),
                       ),
                     );
@@ -471,6 +478,7 @@ class _DiagnosesState extends State<Diagnoses> {
         backgroundColor: Colors.green,
         automaticallyImplyLeading: false,
         actions: [
+          const LanguageSelector(),
           IconButton(
             icon: const Icon(Icons.download),
             onPressed: () {

@@ -8,6 +8,8 @@ import 'dart:io';
 import 'dart:math' show pi, cos, sin;
 import '../database/database_helper.dart';
 import 'package:open_file/open_file.dart';
+import '../utils/date_format_utils.dart';
+import '../widgets/language_selector.dart';
 
 class ExportReport extends StatefulWidget {
   const ExportReport({Key? key}) : super(key: key);
@@ -141,6 +143,148 @@ class _ExportReportState extends State<ExportReport> {
     );
   }
 
+  pw.Widget _buildPieChart(Map<String, int> diseaseCount, double total) {
+    // Create a simple visual representation using colored boxes
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: diseaseCount.entries.toList().asMap().entries.map((entry) {
+        final disease = entry.value.key;
+        final count = entry.value.value;
+        final percentage = (count / total * 100).toStringAsFixed(1);
+        
+        // Use different colors for each disease
+        final colors = [
+          PdfColors.blue300,
+          PdfColors.green300,
+          PdfColors.amber300,
+          PdfColors.pink300,
+          PdfColors.purple300,
+          PdfColors.teal300,
+          PdfColors.red300,
+          PdfColors.indigo300,
+        ];
+        
+        final color = colors[entry.key % colors.length];
+        final barWidth = (double.parse(percentage) * 2).round(); // Scale the bar width
+        
+        return pw.Container(
+          margin: const pw.EdgeInsets.symmetric(vertical: 4),
+          child: pw.Row(
+            children: [
+              pw.Container(
+                width: 12,
+                height: 12,
+                color: color,
+              ),
+              pw.SizedBox(width: 5),
+              pw.Expanded(
+                flex: 3,
+                child: pw.Text('$disease: $count ($percentage%)'),
+              ),
+              pw.Expanded(
+                flex: 7,
+                child: pw.Container(
+                  height: 15,
+                  width: barWidth.toDouble(),
+                  color: color,
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  pw.Widget _buildTrendChart(List<Map<String, dynamic>> diagnoses) {
+    // Group diagnoses by date
+    final Map<String, Map<String, int>> dateData = {};
+  
+    // Process last 7 days of data
+    final now = DateTime.now();
+    for (int i = 6; i >= 0; i--) {
+      final date = now.subtract(Duration(days: i));
+      final dateStr = DateFormat('MM/dd').format(date);
+      dateData[dateStr] = {};
+    }
+  
+    // Count diagnoses by date and disease
+    for (final diagnosis in diagnoses) {
+      final date = DateTime.parse(diagnosis['date']);
+      final dateStr = DateFormat('MM/dd').format(date);
+      final disease = diagnosis['disease'] as String;
+    
+      if (dateData.containsKey(dateStr)) {
+        dateData[dateStr]![disease] = (dateData[dateStr]![disease] ?? 0) + 1;
+      }
+    }
+  
+    // Create a simpler bar chart using a table with visual bars
+    final List<pw.TableRow> rows = [];
+  
+    // Add header row
+    rows.add(
+      pw.TableRow(
+        decoration: pw.BoxDecoration(
+          color: PdfColors.grey300,
+        ),
+        children: [
+          pw.Padding(
+            padding: const pw.EdgeInsets.all(8),
+            child: pw.Text(
+              'Date',
+              style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+            ),
+          ),
+          ...dateData.keys.map((date) => 
+            pw.Padding(
+              padding: const pw.EdgeInsets.all(8),
+              child: pw.Text(
+                date,
+                style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+              ),
+            )
+          ).toList(),
+        ],
+      ),
+    );
+  
+    // Get all unique diseases
+    final allDiseases = <String>{};
+    for (final dateEntry in dateData.entries) {
+      allDiseases.addAll(dateEntry.value.keys);
+    }
+  
+    // Add data rows for each disease
+    for (final disease in allDiseases) {
+      final List<pw.Widget> cells = [
+        pw.Padding(
+          padding: const pw.EdgeInsets.all(8),
+          child: pw.Text(disease),
+        ),
+      ];
+    
+      for (final dateStr in dateData.keys) {
+        final count = dateData[dateStr]![disease] ?? 0;
+        final bar = '█' * count; // Simple visual bar
+        
+        cells.add(
+          pw.Padding(
+            padding: const pw.EdgeInsets.all(8),
+            child: pw.Text('$count $bar'),
+          ),
+        );
+      }
+    
+      rows.add(pw.TableRow(children: cells));
+    }
+  
+    return pw.Table(
+      border: pw.TableBorder.all(color: PdfColors.black),
+      children: rows,
+    );
+  }
+
   Future<void> _exportToPDF() async {
     if (_startDate == null || _endDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -168,6 +312,9 @@ class _ExportReportState extends State<ExportReport> {
         return;
       }
 
+      // Get the current locale's language code
+      final String currentLocale = context.locale.languageCode;
+
       // Calculate disease distribution
       final Map<String, int> diseaseCount = {};
       for (var diagnosis in filteredDiagnoses) {
@@ -181,7 +328,7 @@ class _ExportReportState extends State<ExportReport> {
       pdf.addPage(
         pw.MultiPage(
           pageFormat: PdfPageFormat.a4,
-          build: (pw.Context context) {
+          build: (pw.Context pdfContext) {
             return [
               pw.Header(
                 level: 0,
@@ -196,7 +343,7 @@ class _ExportReportState extends State<ExportReport> {
                       ),
                     ),
                     pw.Text(
-                      DateFormat('MMM d, yyyy').format(DateTime.now()),
+                      DateFormatUtils.formatDate(DateTime.now(), currentLocale, 'MMM d, yyyy'),
                       style: pw.TextStyle(
                         fontSize: 12,
                         color: PdfColors.grey700,
@@ -219,7 +366,7 @@ class _ExportReportState extends State<ExportReport> {
                       style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                     ),
                     pw.Text(
-                      '${DateFormat('MMM d, yyyy').format(_startDate!)} - ${DateFormat('MMM d, yyyy').format(_endDate!)}',
+                      '${DateFormatUtils.formatDate(_startDate!, currentLocale, 'MMM d, yyyy')} - ${DateFormatUtils.formatDate(_endDate!, currentLocale, 'MMM d, yyyy')}',
                     ),
                   ],
                 ),
@@ -234,6 +381,26 @@ class _ExportReportState extends State<ExportReport> {
               ),
               pw.SizedBox(height: 10),
               _buildDistributionChart(diseaseCount, total),
+              pw.SizedBox(height: 20),
+              pw.Text(
+                'Disease Distribution',
+                style: pw.TextStyle(
+                  fontSize: 16,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.SizedBox(height: 10),
+              _buildPieChart(diseaseCount, total),
+              pw.SizedBox(height: 30),
+              pw.Text(
+                'Disease Trend (Last 7 Days)',
+                style: pw.TextStyle(
+                  fontSize: 16,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.SizedBox(height: 10),
+              _buildTrendChart(filteredDiagnoses),
               pw.SizedBox(height: 30),
               pw.Text(
                 'Detailed Diagnosis Records',
@@ -279,9 +446,7 @@ class _ExportReportState extends State<ExportReport> {
                         pw.Padding(
                           padding: const pw.EdgeInsets.all(8),
                           child: pw.Text(
-                            DateFormat('MMM d, yyyy - HH:mm').format(
-                              DateTime.parse(diagnosis['date']),
-                            ),
+                            DateFormatUtils.formatDate(DateTime.parse(diagnosis['date']), currentLocale, 'MMM d, yyyy - HH:mm'),
                           ),
                         ),
                         pw.Padding(
@@ -313,7 +478,7 @@ class _ExportReportState extends State<ExportReport> {
 
       // Save to Downloads directory
       final output = await getExternalStorageDirectory();
-      final fileName = 'corn_disease_report_${DateFormat('yyyyMMdd_HHmmss').format(DateTime.now())}.pdf';
+      final fileName = 'corn_disease_report_${DateFormatUtils.formatDate(DateTime.now(), currentLocale, 'yyyyMMdd_HHmmss')}.pdf';
       final filePath = '${output?.path}/$fileName';
       final file = File(filePath);
       await file.writeAsBytes(await pdf.save());
@@ -388,6 +553,9 @@ class _ExportReportState extends State<ExportReport> {
       appBar: AppBar(
         title: Text('export_report'.tr()),
         backgroundColor: Colors.green,
+        actions: [
+          const LanguageSelector(),
+        ],
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(width * 0.04),
@@ -423,7 +591,7 @@ class _ExportReportState extends State<ExportReport> {
                             children: [
                               Text(
                                 _startDate != null
-                                    ? DateFormat('MMM d, yyyy').format(_startDate!)
+                                    ? DateFormatUtils.formatDate(_startDate!, context.locale.languageCode, 'MMM d, yyyy')
                                     : 'select_date'.tr(),
                               ),
                               const Icon(Icons.calendar_today),
@@ -454,7 +622,7 @@ class _ExportReportState extends State<ExportReport> {
                             children: [
                               Text(
                                 _endDate != null
-                                    ? DateFormat('MMM d, yyyy').format(_endDate!)
+                                    ? DateFormatUtils.formatDate(_endDate!, context.locale.languageCode, 'MMM d, yyyy')
                                     : 'select_date'.tr(),
                               ),
                               const Icon(Icons.calendar_today),

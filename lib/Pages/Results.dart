@@ -1,8 +1,14 @@
+import 'dart:math' as math;
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:easy_localization/easy_localization.dart';
 import '../database/database_helper.dart';
 import 'Dashboard.dart';
+import '../utils/disease_utils.dart';
+import 'package:vector_graphics/vector_graphics.dart';
+import 'dart:ui' as ui show TextDirection;
+import '../widgets/language_selector.dart';  // Import the language selector
 
 class Results extends StatelessWidget {
   final String disease;
@@ -101,6 +107,10 @@ class Results extends StatelessWidget {
         ),
         title: Text('result'.tr()),
         centerTitle: true,
+        actions: [
+          // Add language selector to the app bar
+          const LanguageSelector(),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -116,12 +126,37 @@ class Results extends StatelessWidget {
               ClipRRect(
                 borderRadius:
                     const BorderRadius.vertical(top: Radius.circular(15)),
-                child: Image.file(
-                  File(imagePath),
-                  width: double.infinity,
-                  height: 200,
-                  fit: BoxFit.cover,
-                ),
+                child: imagePath.isNotEmpty
+                    ? Image.file(
+                        File(imagePath),
+                        width: double.infinity,
+                        height: 200,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            width: double.infinity,
+                            height: 200,
+                            color: Colors.grey[800],
+                            child: const Center(
+                              child: Text(
+                                'Image not available',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          );
+                        },
+                      )
+                    : Container(
+                        width: double.infinity,
+                        height: 200,
+                        color: Colors.grey[800],
+                        child: const Center(
+                          child: Text(
+                            'No image',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
               ),
 
               // Disease Title and Type
@@ -148,39 +183,18 @@ class Results extends StatelessWidget {
 
                     const SizedBox(height: 20),
 
-                    // Disease Description and Prevention Tips
-                    Text(
-                      'disease_description'.tr(),
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    // Dynamically display the correct disease description based on the disease
-                    Text(
-                      _getDiseaseDescription(disease),
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.white,
-                      ),
-                    ),
+                    // Disease Description
+                    _buildDiseaseDescription(),
 
+                    const SizedBox(height: 20),
+                    
+                    // Confidence Indicator
+                    _buildConfidenceIndicator(),
+                    
                     const SizedBox(height: 20),
 
                     // Prevention Tips
-                    Text(
-                      _getPreventionTitle(disease),
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    // Dynamically display the correct prevention tips based on the disease
-                    _buildDiseasePreventionTips(disease),
+                    _buildPreventionTips(),
                   ],
                 ),
               ),
@@ -191,16 +205,160 @@ class Results extends StatelessWidget {
     );
   }
 
-  Widget _buildPreventionTip(String title, String description) {
+  Widget _buildPreventionTips() {
+    // Get the disease key for translation
+    final String diseaseKey = getDiseaseKey(disease);
+    
+    // For healthy plants, use specific healthy maintenance tips
+    if (diseaseKey == 'healthy') {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'healthy_leaf_prevention'.tr(),
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 10),
+          _buildPreventionTip(
+            'healthy_nutrition_title'.tr(), 
+            'healthy_nutrition_desc'.tr(),
+            fallbackTitle: "1. Maintain Proper Nutrition",
+            fallbackDesc: "Ensure balanced fertilization with appropriate levels of nitrogen, phosphorus, and potassium for optimal plant health."
+          ),
+          _buildPreventionTip(
+            'healthy_irrigation_title'.tr(), 
+            'healthy_irrigation_desc'.tr(),
+            fallbackTitle: "2. Proper Irrigation",
+            fallbackDesc: "Maintain consistent soil moisture without overwatering, which can stress plants and create conditions for disease."
+          ),
+          _buildPreventionTip(
+            'healthy_monitoring_title'.tr(), 
+            'healthy_monitoring_desc'.tr(),
+            fallbackTitle: "3. Regular Monitoring",
+            fallbackDesc: "Continue inspecting plants regularly to catch any early signs of disease or pest problems."
+          ),
+        ],
+      );
+    }
+    
+    // Build prevention tips based on disease
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'disease_prevention'.tr(),
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 10),
+        // Use if-else ladder for disease-specific tips
+        if (diseaseKey == 'common_rust') ...[
+          _buildPreventionTip(
+            'resistant_varieties_title'.tr(), 
+            'resistant_varieties_desc'.tr(),
+            fallbackTitle: "1. Choose Resistant Varieties",
+            fallbackDesc: "Use rust-resistant maize varieties to lower the risk of severe infection and boost natural plant defense."
+          ),
+          _buildPreventionTip(
+            'crop_rotation_title'.tr(), 
+            'crop_rotation_desc'.tr(),
+            fallbackTitle: "2. Rotate Crops",
+            fallbackDesc: "Rotate maize with non-host crops like soybeans to disrupt the disease life cycle and reduce spore buildup."
+          ),
+          _buildPreventionTip(
+            'fungicide_title'.tr(), 
+            'fungicide_desc'.tr(),
+            fallbackTitle: "3. Apply Fungicides",
+            fallbackDesc: "Mancozeb, propiconazole, or carbendazim+mancozeb combinations can be effective when applied according to guidelines."
+          ),
+        ] else if (diseaseKey == 'gray_leaf_spot') ...[
+          _buildPreventionTip(
+            'gls_resistant_varieties_title'.tr(), 
+            'gls_resistant_varieties_desc'.tr(),
+            fallbackTitle: "1. Choose Resistant Varieties",
+            fallbackDesc: "Use corn varieties resistant to Gray Leaf Spot to reduce the risk of infection."
+          ),
+          _buildPreventionTip(
+            'crop_rotation_title'.tr(), 
+            'crop_rotation_desc'.tr(),
+            fallbackTitle: "2. Crop Rotation",
+            fallbackDesc: "Rotate with non-host crops for 1-2 years, as the pathogen survives in corn residue."
+          ),
+          _buildPreventionTip(
+            'plant_spacing_title'.tr(), 
+            'plant_spacing_desc'.tr(),
+            fallbackTitle: "3. Improve Air Circulation",
+            fallbackDesc: "Use appropriate plant spacing and row orientation to improve air movement and reduce humidity in the canopy."
+          ),
+        ] else if (diseaseKey == 'northern_leaf_blight') ...[
+          _buildPreventionTip(
+            'nlb_resistant_varieties_title'.tr(), 
+            'nlb_resistant_varieties_desc'.tr(),
+            fallbackTitle: "1. Resistant Hybrids",
+            fallbackDesc: "Plant corn hybrids with resistance to northern leaf blight."
+          ),
+          _buildPreventionTip(
+            'nlb_crop_rotation_title'.tr(), 
+            'nlb_crop_rotation_desc'.tr(),
+            fallbackTitle: "2. Crop Rotation",
+            fallbackDesc: "Implement 1-2 year rotation with non-host crops to reduce pathogen survival."
+          ),
+          _buildPreventionTip(
+            'nlb_fungicide_title'.tr(), 
+            'nlb_fungicide_desc'.tr(),
+            fallbackTitle: "3. Apply Fungicides",
+            fallbackDesc: "Fungicide sprays can be effective when applied at early stages of infection, especially in high-risk fields."
+          ),
+        ] else ...[
+          _buildPreventionTip(
+            'resistant_varieties_title'.tr(), 
+            'resistant_varieties_desc'.tr(),
+            fallbackTitle: "1. Choose Resistant Varieties",
+            fallbackDesc: "Select disease-resistant corn varieties suitable for your region."
+          ),
+          _buildPreventionTip(
+            'crop_rotation_title'.tr(), 
+            'crop_rotation_desc'.tr(),
+            fallbackTitle: "2. Practice Crop Rotation",
+            fallbackDesc: "Avoid planting corn in the same field for consecutive seasons."
+          ),
+          _buildPreventionTip(
+            'regular_monitoring_title'.tr(), 
+            'regular_monitoring_desc'.tr(),
+            fallbackTitle: "3. Monitor Regularly",
+            fallbackDesc: "Regularly inspect plants for early signs of disease to enable timely intervention."
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildPreventionTip(String title, String description, {String? fallbackTitle, String? fallbackDesc}) {
+    // Check if translation exists by comparing the translated value with the key
+    if (title == title.tr() && fallbackTitle != null) {
+      title = fallbackTitle;
+    }
+    
+    if (description == description.tr() && fallbackDesc != null) {
+      description = fallbackDesc;
+    }
+    
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
             style: const TextStyle(
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
@@ -209,8 +367,8 @@ class Results extends StatelessWidget {
           Text(
             description,
             style: const TextStyle(
-              fontSize: 14,
-              color: Colors.white,
+              fontSize: 12,
+              color: Colors.white70,
             ),
           ),
         ],
@@ -218,190 +376,264 @@ class Results extends StatelessWidget {
     );
   }
 
-  // Helper method to get the correct disease description based on the disease name
-  String _getDiseaseDescription(String disease) {
-    switch (disease) {
-      case 'Healthy':
-        return 'healthy_leaf_description'.tr();
-      case 'Common Rust':
-        return 'common_rust_description'.tr();
-      case 'Gray Leaf Spot':
-        return 'gray_leaf_spot_description'.tr();
-      case 'Northern Leaf Blight':
-        return 'northern_leaf_blight_description'.tr();
-      case 'Southern Corn Leaf Blight':
-        return 'southern_corn_leaf_blight_description'.tr();
-      case 'Blight':
-        return 'blight_description'.tr();
-      case 'Bacterial Streak':
-        return 'bacterial_streak_description'.tr();
-      case 'Bacterial Spot':
-        return 'bacterial_spot_description'.tr();
-      case 'Bacterial Wilt':
-        return 'bacterial_wilt_description'.tr();
-      case 'Downy Mildew':
-        return 'downy_mildew_description'.tr();
-      case 'Goss\'s Wilt':
-        return 'goss_wilt_description'.tr();
-      case 'Maize Dwarf Mosaic':
-        return 'maize_dwarf_mosaic_description'.tr();
-      case 'Maize Stunt Virus':
-        return 'maize_stunt_virus_description'.tr();
-      case 'Northern Corn Leaf Blight':
-        return 'northern_corn_leaf_blight_description'.tr();
-      case 'Northern Corn Leaf Spot':
-        return 'northern_corn_leaf_spot_description'.tr();
-      case 'Northern Corn Rot':
-        return 'northern_corn_rot_description'.tr();
-      default:
-        return 'common_rust_description'.tr(); // Default fallback
+  Widget _buildDiseaseDescription() {
+    // Get the disease key for translation
+    final String diseaseKey = getDiseaseKey(disease);
+    
+    // Use existing translation keys from the translation files
+    String translatedDescription;
+    
+    if (diseaseKey == 'healthy') {
+      translatedDescription = 'healthy_leaf_description'.tr();
+      // Check if translation exists
+      if (translatedDescription == 'healthy_leaf_description') {
+        translatedDescription = 'This corn leaf appears healthy with no visible signs of disease. Healthy corn leaves are typically uniform green in color, have smooth surfaces, and show no discoloration, spots, lesions, or abnormal growth patterns.';
+      }
+    } else if (diseaseKey == 'common_rust') {
+      translatedDescription = 'common_rust_description'.tr();
+      if (translatedDescription == 'common_rust_description') {
+        translatedDescription = 'Common rust in maize, caused by Puccinia sorghi, shows as reddish-brown pustules on leaves, affecting photosynthesis and yield, especially in cool, moist climates.';
+      }
+    } else if (diseaseKey == 'northern_leaf_blight') {
+      translatedDescription = 'northern_leaf_blight_description'.tr();
+      if (translatedDescription == 'northern_leaf_blight_description') {
+        translatedDescription = 'Northern Leaf Blight, caused by Exserohilum turcicum, appears as long, cigar-shaped gray-green lesions that turn brown. It develops in humid conditions and temperatures of 18-27°C.';
+      }
+    } else if (diseaseKey == 'gray_leaf_spot') {
+      translatedDescription = 'gray_leaf_spot_description'.tr();
+      if (translatedDescription == 'gray_leaf_spot_description') {
+        translatedDescription = 'Gray Leaf Spot, caused by Cercospora zeae-maydis, appears as rectangular gray-brown lesions on leaves. It thrives in warm, humid conditions, affecting photosynthesis and reducing yield.';
+      }
+    } else {
+      translatedDescription = 'This appears to be $disease. For detailed information, please consult agricultural extension services.';
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'disease_description'.tr(),
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          translatedDescription,
+          style: const TextStyle(
+            fontSize: 14,
+            color: Colors.white,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildConfidenceIndicator() {
+    // Check if confidence is null and provide a default value
+    // For saved diagnoses without confidence, show N/A instead of 0%
+    if (confidence == null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const SizedBox(height: 24),
+          Center(
+            child: const Text(
+              'Confidence Level',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Center(
+            child: Container(
+              height: 150,
+              width: 150,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.grey, width: 2),
+              ),
+              child: const Center(
+                child: Text(
+                  'N/A',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
+      );
+    }
+    
+    // Convert confidence to percentage
+    final confidenceValue = confidence!;
+    final confidencePercent = (confidenceValue * 100).toInt();
+    
+    // Determine color based on confidence level
+    Color confidenceColor;
+    if (confidencePercent >= 80) {
+      confidenceColor = Colors.green;
+    } else if (confidencePercent >= 60) {
+      confidenceColor = Colors.lightGreen;
+    } else if (confidencePercent >= 40) {
+      confidenceColor = Colors.yellow;
+    } else {
+      confidenceColor = Colors.red;
+    }
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const SizedBox(height: 24),
+        Center(
+          child: const Text(
+            'Confidence Level',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Center(
+          child: SizedBox(
+            height: 150,
+            width: 150,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                // Pie chart
+                CustomPaint(
+                  size: const Size(150, 150),
+                  painter: ConfidencePieChart(
+                    confidence: confidenceValue,
+                    confidenceColor: confidenceColor,
+                  ),
+                ),
+                // Confidence percentage text
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '$confidencePercent%',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: confidenceColor,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      _getConfidenceDescription(confidencePercent),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontStyle: FontStyle.italic,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  // Helper method to get confidence description
+  String _getConfidenceDescription(int confidencePercent) {
+    if (confidencePercent >= 80) {
+      return 'High Confidence';
+    } else if (confidencePercent >= 60) {
+      return 'Medium Confidence';
+    } else if (confidencePercent >= 40) {
+      return 'Low Confidence';
+    } else {
+      return 'Very Low Confidence';
     }
   }
 
-  // Helper method to get the correct prevention title based on the disease name
-  String _getPreventionTitle(String disease) {
-    switch (disease) {
-      case 'Healthy':
-        return 'healthy_leaf_prevention'.tr();
-      case 'Common Rust':
-        return 'disease_prevention'.tr();
-      case 'Gray Leaf Spot':
-        return 'gray_leaf_spot_prevention'.tr();
-      case 'Northern Leaf Blight':
-      case 'Northern Corn Leaf Blight':
-        return 'northern_leaf_blight_prevention'.tr();
-      default:
-        return 'disease_prevention'.tr(); // Default fallback
+  // Helper method to get standardized disease key
+  String getDiseaseKey(String diseaseName) {
+    final String normalizedDisease = diseaseName.toLowerCase().trim();
+    
+    if (normalizedDisease.contains('gray') && normalizedDisease.contains('leaf') && normalizedDisease.contains('spot')) {
+      return 'gray_leaf_spot';
+    } else if (normalizedDisease.contains('common') && normalizedDisease.contains('rust')) {
+      return 'common_rust';
+    } else if (normalizedDisease.contains('northern') && normalizedDisease.contains('leaf') && normalizedDisease.contains('blight')) {
+      return 'northern_leaf_blight';
+    } else if (normalizedDisease.contains('healthy')) {
+      return 'healthy';
     }
+    
+    // Default: convert spaces to underscores
+    return normalizedDisease.replaceAll(' ', '_');
+  }
+}
+
+// Add this new class for the pie chart
+class ConfidencePieChart extends CustomPainter {
+  final double confidence;
+  final Color confidenceColor;
+
+  ConfidencePieChart({
+    required this.confidence,
+    required this.confidenceColor,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = math.min(size.width, size.height) / 2;
+    
+    // Background circle (remaining percentage)
+    final backgroundPaint = Paint()
+      ..color = Colors.grey[800]!
+      ..style = PaintingStyle.fill;
+    
+    canvas.drawCircle(center, radius, backgroundPaint);
+    
+    // Confidence arc (filled percentage)
+    final confidencePaint = Paint()
+      ..color = confidenceColor
+      ..style = PaintingStyle.fill;
+    
+    // Draw the confidence arc
+    final rect = Rect.fromCircle(center: center, radius: radius);
+    canvas.drawArc(
+      rect,
+      -math.pi / 2, // Start from the top
+      2 * math.pi * confidence, // Arc angle based on confidence
+      true, // Use center
+      confidencePaint,
+    );
+    
+    // Draw center circle (to create donut effect)
+    final centerPaint = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.fill;
+    
+    canvas.drawCircle(center, radius * 0.6, centerPaint);
   }
 
-  // Helper method to build the prevention tips based on the disease
-  Widget _buildDiseasePreventionTips(String disease) {
-    switch (disease) {
-      case 'Healthy':
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildPreventionTip(
-              'healthy_nutrition_title'.tr(),
-              'healthy_nutrition_desc'.tr(),
-            ),
-            _buildPreventionTip(
-              'healthy_irrigation_title'.tr(),
-              'healthy_irrigation_desc'.tr(),
-            ),
-            _buildPreventionTip(
-              'healthy_monitoring_title'.tr(),
-              'healthy_monitoring_desc'.tr(),
-            ),
-          ],
-        );
-      case 'Common Rust':
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildPreventionTip(
-              'resistant_varieties_title'.tr(),
-              'resistant_varieties_desc'.tr(),
-            ),
-            _buildPreventionTip(
-              'crop_rotation_title'.tr(),
-              'crop_rotation_desc'.tr(),
-            ),
-            _buildPreventionTip(
-              '3. Optimize Plant Spacing:',
-              'Plant maize with enough spacing to improve airflow, reducing leaf moisture and fungal infection risks.',
-            ),
-            _buildPreventionTip(
-              '4. Monitor Regularly:',
-              'Regularly inspect crops, especially during moist conditions, for early detection.',
-            ),
-            _buildPreventionTip(
-              'fungicide_title'.tr(),
-              'fungicide_desc'.tr(),
-            ),
-          ],
-        );
-      case 'Gray Leaf Spot':
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildPreventionTip(
-              'gls_resistant_varieties_title'.tr(),
-              'gls_resistant_varieties_desc'.tr(),
-            ),
-            _buildPreventionTip(
-              'gls_crop_rotation_title'.tr(),
-              'gls_crop_rotation_desc'.tr(),
-            ),
-            _buildPreventionTip(
-              'gls_field_sanitation_title'.tr(),
-              'gls_field_sanitation_desc'.tr(),
-            ),
-            _buildPreventionTip(
-              'gls_fungicide_title'.tr(),
-              'gls_fungicide_desc'.tr(),
-            ),
-          ],
-        );
-      case 'Northern Leaf Blight':
-      case 'Northern Corn Leaf Blight':
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildPreventionTip(
-              'nlb_resistant_varieties_title'.tr(),
-              'nlb_resistant_varieties_desc'.tr(),
-            ),
-            _buildPreventionTip(
-              'nlb_crop_rotation_title'.tr(),
-              'nlb_crop_rotation_desc'.tr(),
-            ),
-            _buildPreventionTip(
-              'nlb_field_sanitation_title'.tr(),
-              'nlb_field_sanitation_desc'.tr(),
-            ),
-            _buildPreventionTip(
-              'nlb_avoid_continuous_title'.tr(),
-              'nlb_avoid_continuous_desc'.tr(),
-            ),
-            _buildPreventionTip(
-              'nlb_fungicide_title'.tr(),
-              'nlb_fungicide_desc'.tr(),
-            ),
-            _buildPreventionTip(
-              'nlb_plant_spacing_title'.tr(),
-              'nlb_plant_spacing_desc'.tr(),
-            ),
-            _buildPreventionTip(
-              'nlb_soil_drainage_title'.tr(),
-              'nlb_soil_drainage_desc'.tr(),
-            ),
-            _buildPreventionTip(
-              'nlb_planting_date_title'.tr(),
-              'nlb_planting_date_desc'.tr(),
-            ),
-            _buildPreventionTip(
-              'nlb_specific_fungicides_title'.tr(),
-              'nlb_specific_fungicides_desc'.tr(),
-            ),
-          ],
-        );
-      default:
-        // Default to Common Rust prevention tips
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildPreventionTip(
-              'resistant_varieties_title'.tr(),
-              'resistant_varieties_desc'.tr(),
-            ),
-            _buildPreventionTip(
-              'crop_rotation_title'.tr(),
-              'crop_rotation_desc'.tr(),
-            ),
-          ],
-        );
-    }
+  @override
+  bool shouldRepaint(ConfidencePieChart oldDelegate) {
+    return oldDelegate.confidence != confidence || 
+           oldDelegate.confidenceColor != confidenceColor;
   }
 }

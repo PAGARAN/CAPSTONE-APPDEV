@@ -12,7 +12,7 @@ class WelcomePageState extends State<WelcomePage> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(seconds: 4), () {
-      Navigator.pushReplacementNamed(context, '/language');
+      Navigator.pushReplacementNamed(context, '/dashboard');
     });
   }
 

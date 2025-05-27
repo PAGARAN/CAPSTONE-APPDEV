@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import '../widgets/language_selector.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
@@ -24,6 +25,9 @@ class AboutPage extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
+        actions: [
+          const LanguageSelector(),
+        ],
         title: AutoSizeText(
           'about_cdd'.tr(),
           style: TextStyle(
