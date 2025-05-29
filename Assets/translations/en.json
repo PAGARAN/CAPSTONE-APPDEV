@@ -110,5 +110,7 @@
   "nlb_planting_date_title": "7. Planting Date:",
   "nlb_planting_date_desc": "Adjust planting dates to avoid periods of high disease pressure. Early planting in some regions can allow the crop to mature before disease pressure becomes severe.",
   "nlb_specific_fungicides_title": "8. Specific Fungicides:",
-  "nlb_specific_fungicides_desc": "Delaro® 325 SC Fungicide and Delaro® Complete Fungicide: Labeled for NCLB control, these can be sprayed when the disease first appears. Lucento® fungicide and Topguard® EQ fungicide: These foliarly applied fungicides can protect against NCLB at the V1-R1 growth stages."
+  "nlb_specific_fungicides_desc": "Delaro® 325 SC Fungicide and Delaro® Complete Fungicide: Labeled for NCLB control, these can be sprayed when the disease first appears. Lucento® fungicide and Topguard® EQ fungicide: These foliarly applied fungicides can protect against NCLB at the V1-R1 growth stages.",
+  "live_scan": "Live Scan",
+  "scanning_for_diseases": "Scanning for diseases..."
 }

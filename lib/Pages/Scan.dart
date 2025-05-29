@@ -4,10 +4,12 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import './Dashboard.dart';
 import './Results.dart';
-import './Diagnoses.dart';
+// import './Diagnoses.dart';
+import './LiveScan.dart'; 
 import '../database/database_helper.dart';
 import '../services/model_service.dart';
 import '../widgets/language_selector.dart';
+import 'package:camera/camera.dart';
 
 class Scan extends StatefulWidget {
   const Scan({super.key});
@@ -21,13 +23,38 @@ class _ScanState extends State<Scan> {
   File? _selectedImage;
   final ModelService _modelService = ModelService();
   bool _isProcessing = false;
-
+  List<CameraDescription>? cameras;
+  
   @override
   void initState() {
     super.initState();
     _initializeModel();
+    _initializeCamera();
   }
-
+  
+  Future<void> _initializeCamera() async {
+    cameras = await availableCameras();
+  }
+  
+  Future<void> _startLiveScan(BuildContext context) async {
+    if (cameras == null || cameras!.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No camera available')),
+      );
+      return;
+    }
+    
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LiveScanPage(
+          camera: cameras![0],
+          modelService: _modelService,
+        ),
+      ),
+    );
+  }
+  
   Future<void> _initializeModel() async {
     await _modelService.initialize();
   }
@@ -259,6 +286,36 @@ class _ScanState extends State<Scan> {
                               SizedBox(width: 8),
                               Text(
                                 'take_photo'.tr(),
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      // Live Scan Button
+                      Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        child: ElevatedButton(
+                          onPressed: () => _startLiveScan(context),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.videocam, color: Colors.black),
+                              SizedBox(width: 8),
+                              Text(
+                                'live_scan'.tr(),
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 16,
