@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 
 class ModelService {
   // Make sure this path exactly matches your assets configuration in pubspec.yaml
-  static const String modelPath = 'assets/models/best_int8.tflite';
+  static const String modelPath = 'assets/models/best_int8_2.tflite';
   static const int inputSize = 640; // YOLOv8 typically uses 640x640
 
   late Interpreter _interpreter;
@@ -26,7 +26,7 @@ class ModelService {
       }
 
       final appDir = await getApplicationDocumentsDirectory();
-      final modelFile = File('${appDir.path}/best_int8.tflite');
+      final modelFile = File('${appDir.path}/best_int8_2.tflite');
 
       if (!await modelFile.exists()) {
         print("Model file doesn't exist, copying from assets...");
