@@ -224,20 +224,20 @@ class Results extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           _buildPreventionTip(
-            'healthy_nutrition_title'.tr(), 
-            'healthy_nutrition_desc'.tr(),
+            'healthy_nutrition_title',
+            'healthy_nutrition_desc',
             fallbackTitle: "1. Maintain Proper Nutrition",
             fallbackDesc: "Ensure balanced fertilization with appropriate levels of nitrogen, phosphorus, and potassium for optimal plant health."
           ),
           _buildPreventionTip(
-            'healthy_irrigation_title'.tr(), 
-            'healthy_irrigation_desc'.tr(),
+            'healthy_irrigation_title',
+            'healthy_irrigation_desc',
             fallbackTitle: "2. Proper Irrigation",
             fallbackDesc: "Maintain consistent soil moisture without overwatering, which can stress plants and create conditions for disease."
           ),
           _buildPreventionTip(
-            'healthy_monitoring_title'.tr(), 
-            'healthy_monitoring_desc'.tr(),
+            'healthy_monitoring_title',
+            'healthy_monitoring_desc',
             fallbackTitle: "3. Regular Monitoring",
             fallbackDesc: "Continue inspecting plants regularly to catch any early signs of disease or pest problems."
           ),
@@ -261,79 +261,127 @@ class Results extends StatelessWidget {
         // Use if-else ladder for disease-specific tips
         if (diseaseKey == 'common_rust') ...[
           _buildPreventionTip(
-            'resistant_varieties_title'.tr(), 
-            'resistant_varieties_desc'.tr(),
+            'resistant_varieties_title',
+            'resistant_varieties_desc',
             fallbackTitle: "1. Choose Resistant Varieties",
             fallbackDesc: "Use rust-resistant maize varieties to lower the risk of severe infection and boost natural plant defense."
           ),
           _buildPreventionTip(
-            'crop_rotation_title'.tr(), 
-            'crop_rotation_desc'.tr(),
+            'crop_rotation_title',
+            'crop_rotation_desc',
             fallbackTitle: "2. Rotate Crops",
             fallbackDesc: "Rotate maize with non-host crops like soybeans to disrupt the disease life cycle and reduce spore buildup."
           ),
           _buildPreventionTip(
-            'fungicide_title'.tr(), 
-            'fungicide_desc'.tr(),
-            fallbackTitle: "3. Apply Fungicides",
-            fallbackDesc: "Mancozeb, propiconazole, or carbendazim+mancozeb combinations can be effective when applied according to guidelines."
+            'plant_spacing_title',
+            'plant_spacing_desc',
+            fallbackTitle: "3. Optimize Plant Spacing",
+            fallbackDesc: "Plant corn with adequate spacing to allow air circulation throughout the crop, reducing leaf moisture and the likelihood of fungal infection."
+          ),
+          _buildPreventionTip(
+            'regular_monitoring_title',
+            'regular_monitoring_desc',
+            fallbackTitle: "4. Monitor Regularly",
+            fallbackDesc: "Regularly observe plants, especially during humid conditions, to catch early signs of disease."
+          ),
+          _buildPreventionTip(
+            'fungicide_application_title',
+            'fungicide_application_desc',
+            fallbackTitle: "5. Apply Fungicides",
+            fallbackDesc: "The use of appropriate fungicides at the early stage of infection can help prevent the spread of rust. Make sure to follow proper spraying methods and recommended dosage."
           ),
         ] else if (diseaseKey == 'gray_leaf_spot') ...[
           _buildPreventionTip(
-            'gls_resistant_varieties_title'.tr(), 
-            'gls_resistant_varieties_desc'.tr(),
+            'gls_resistant_varieties_title',
+            'gls_resistant_varieties_desc',
             fallbackTitle: "1. Choose Resistant Varieties",
             fallbackDesc: "Use corn varieties resistant to Gray Leaf Spot to reduce the risk of infection."
           ),
           _buildPreventionTip(
-            'crop_rotation_title'.tr(), 
-            'crop_rotation_desc'.tr(),
+            'gls_crop_rotation_title',
+            'gls_crop_rotation_desc',
             fallbackTitle: "2. Crop Rotation",
             fallbackDesc: "Rotate with non-host crops for 1-2 years, as the pathogen survives in corn residue."
           ),
           _buildPreventionTip(
-            'plant_spacing_title'.tr(), 
-            'plant_spacing_desc'.tr(),
-            fallbackTitle: "3. Improve Air Circulation",
-            fallbackDesc: "Use appropriate plant spacing and row orientation to improve air movement and reduce humidity in the canopy."
+            'gls_field_sanitation_title',
+            'gls_field_sanitation_desc',
+            fallbackTitle: "3. Field Sanitation",
+            fallbackDesc: "Remove and destroy crop residue after harvest to reduce spore buildup for the next season."
+          ),
+          _buildPreventionTip(
+            'gls_fungicide_title',
+            'gls_fungicide_desc',
+            fallbackTitle: "4. Apply Fungicides",
+            fallbackDesc: "For gray leaf spot control in corn, fungicide applications, particularly strobilurin and triazole-based products, are effective when applied during tasseling to early silking stage (VT-R1) or in response to disease presence."
           ),
         ] else if (diseaseKey == 'northern_leaf_blight') ...[
           _buildPreventionTip(
-            'nlb_resistant_varieties_title'.tr(), 
-            'nlb_resistant_varieties_desc'.tr(),
+            'nlb_resistant_varieties_title',
+            'nlb_resistant_varieties_desc',
             fallbackTitle: "1. Resistant Hybrids",
             fallbackDesc: "Plant corn hybrids with resistance to northern leaf blight."
           ),
           _buildPreventionTip(
-            'nlb_crop_rotation_title'.tr(), 
-            'nlb_crop_rotation_desc'.tr(),
+            'nlb_crop_rotation_title',
+            'nlb_crop_rotation_desc',
             fallbackTitle: "2. Crop Rotation",
             fallbackDesc: "Implement 1-2 year rotation with non-host crops to reduce pathogen survival."
           ),
           _buildPreventionTip(
-            'nlb_fungicide_title'.tr(), 
-            'nlb_fungicide_desc'.tr(),
-            fallbackTitle: "3. Apply Fungicides",
+            'nlb_field_sanitation_title',
+            'nlb_field_sanitation_desc',
+            fallbackTitle: "3. Field Sanitation",
+            fallbackDesc: "Tillage or burying crop residue can help reduce infection levels by reducing primary inoculum."
+          ),
+          _buildPreventionTip(
+            'nlb_avoid_continuous_title',
+            'nlb_avoid_continuous_desc',
+            fallbackTitle: "4. Avoid Continuous Corn",
+            fallbackDesc: "Continuous corn planting and conservation tillage practices can increase the risk of NLB."
+          ),
+          _buildPreventionTip(
+            'nlb_fungicide_title',
+            'nlb_fungicide_desc',
+            fallbackTitle: "5. Apply Fungicides",
             fallbackDesc: "Fungicide sprays can be effective when applied at early stages of infection, especially in high-risk fields."
+          ),
+          _buildPreventionTip(
+            'nlb_plant_spacing_title',
+            'nlb_plant_spacing_desc',
+            fallbackTitle: "6. Plant Spacing",
+            fallbackDesc: "Maintain adequate plant spacing to promote air circulation and reduce humidity around plants."
+          ),
+          _buildPreventionTip(
+            'nlb_soil_drainage_title',
+            'nlb_soil_drainage_desc',
+            fallbackTitle: "7. Soil Drainage",
+            fallbackDesc: "Ensure good field drainage to prevent water pooling, which can promote disease spread."
+          ),
+          _buildPreventionTip(
+            'nlb_planting_date_title',
+            'nlb_planting_date_desc',
+            fallbackTitle: "8. Planting Date",
+            fallbackDesc: "Adjust planting dates to avoid periods of high disease pressure. Early planting in some regions can help the crop mature before severe NLB pressure."
           ),
         ] else ...[
           _buildPreventionTip(
-            'resistant_varieties_title'.tr(), 
-            'resistant_varieties_desc'.tr(),
-            fallbackTitle: "1. Choose Resistant Varieties",
-            fallbackDesc: "Select disease-resistant corn varieties suitable for your region."
+            'healthy_nutrition_title',
+            'healthy_nutrition_desc',
+            fallbackTitle: "1. Maintain Proper Nutrition",
+            fallbackDesc: "Ensure balanced fertilization with appropriate levels of nitrogen, phosphorus, and potassium for optimal plant health."
           ),
           _buildPreventionTip(
-            'crop_rotation_title'.tr(), 
-            'crop_rotation_desc'.tr(),
-            fallbackTitle: "2. Practice Crop Rotation",
-            fallbackDesc: "Avoid planting corn in the same field for consecutive seasons."
+            'healthy_irrigation_title',
+            'healthy_irrigation_desc',
+            fallbackTitle: "2. Proper Irrigation",
+            fallbackDesc: "Maintain consistent soil moisture without overwatering, which can weaken plants and create conditions for disease."
           ),
           _buildPreventionTip(
-            'regular_monitoring_title'.tr(), 
-            'regular_monitoring_desc'.tr(),
-            fallbackTitle: "3. Monitor Regularly",
-            fallbackDesc: "Regularly inspect plants for early signs of disease to enable timely intervention."
+            'healthy_monitoring_title',
+            'healthy_monitoring_desc',
+            fallbackTitle: "3. Regular Monitoring",
+            fallbackDesc: "Continue to inspect plants regularly for any early signs of disease or pest problems."
           ),
         ],
       ],
@@ -341,14 +389,18 @@ class Results extends StatelessWidget {
   }
 
   Widget _buildPreventionTip(String title, String description, {String? fallbackTitle, String? fallbackDesc}) {
-    // Check if translation exists by comparing the translated value with the key
-    if (title == title.tr() && fallbackTitle != null) {
-      title = fallbackTitle;
-    }
-    
-    if (description == description.tr() && fallbackDesc != null) {
-      description = fallbackDesc;
-    }
+    // Try to get translation first
+    String translatedTitle = title.tr();
+    String translatedDescription = description.tr();
+
+    // Check if translation exists by seeing if the result is different from the key
+    // If the translation is not found, tr() returns the key itself
+    bool titleTranslationExists = translatedTitle != title;
+    bool descTranslationExists = translatedDescription != description;
+
+    // Use translation if it exists, otherwise use fallback
+    String finalTitle = titleTranslationExists ? translatedTitle : (fallbackTitle ?? title);
+    String finalDescription = descTranslationExists ? translatedDescription : (fallbackDesc ?? description);
     
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -356,7 +408,7 @@ class Results extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            title,
+            finalTitle,
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
@@ -365,7 +417,7 @@ class Results extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            description,
+            finalDescription,
             style: const TextStyle(
               fontSize: 12,
               color: Colors.white70,
